@@ -6,6 +6,7 @@
     <title>Administrador</title>
 </head>
 <body>
-    
+    Login    
+
 </body>
 </html>
