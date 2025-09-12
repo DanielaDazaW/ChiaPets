@@ -12,6 +12,8 @@ echo "Hola"
 </head>
 
 <body>
+
+
     sitioweb
     <nav class="navbar navbar-expand-lg navbar-light bg-primary">
         <ul class="nav navbar-nav">
@@ -37,4 +39,5 @@ echo "Hola"
 
     <div class="container">
         <br/><br/>
+
         <div class="row">

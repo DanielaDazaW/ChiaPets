@@ -5,31 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
    
-    <link rel="stylesheet" href="./cssa/bootstrap.min.css"/>
+    <link href="https://bootswatch.com/5/brite/bootstrap.min.css" rel="stylesheet" />
 
      
 </head>
 <body>
        
-    <nav class="navbar navbar-expand-lg navbar-light bg-primary">
-        <ul class="nav navbar-nav">
+    <?php $url="http://".$_SERVER['HTTP_HOST']."/ChiaPet/ChiaPets"   ?>
 
-            <li class="nav-item">
-                <a class="nav-link" href="#">Inicio</a>
-            </li>
+    <nav class="navbar navbar-expand-lg navbar-primary bg-primary">
+        <div class="nav navbar-nav">
 
-               <li class="nav-item">
-                <a class="nav-link" href="index.php">Campañas</a>
-            </li>
-
-               <li class="nav-item">
-                <a class="nav-link" href="Nosotros.php">Mascotas</a>
-            </li>
-
-               <li class="nav-item">
-                <a class="nav-link" href="campanas.php">Servicios</a>
-            </li>
-        </ul>
+                <a class="nav-item nav-link active" href="#">Administrador ChiaPet<span class="sr-only">(actual)</span></a>
+                <a class="nav-item nav-link" href="<?php echo $url;?>/administrador/seccion/campanas.php">Campañas</a>
+                <a class="nav-item nav-link" href="<?php echo $url;?>/administrador/inicio.php">Inicio</a>
+                <a class="nav-item nav-link" href="<?php echo $url;?>/administrador/seccion/cerrar.php">Cerrar</a>
+                <a class="nav-item nav-link" href="#">Mascotas</a>
+                <a class="nav-item nav-link" href="">Servicios</a>
+                <a class="nav-item nav-link" href="<?php echo $url;?>">Ver Sitio</a>
+        </div>
     </nav>
 
 
