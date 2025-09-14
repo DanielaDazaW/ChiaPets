@@ -10,15 +10,15 @@ include("../../config/bd.php");
 
 switch ($accion) {
     case "Agregar":
-        $sentenciaSQL = $conexion->prepare("INSERT INTO tipo_campana (tipo_campana,estado)  VALUES (:campana, 1)");
-        $sentenciaSQL->bindParam(':campana', $txtTipoCampana);
+        $sentenciaSQL = $conexion->prepare("INSERT INTO tipo_campana (tipo_campana,estado)  VALUES (:TipoCampana, 1)");
+        $sentenciaSQL->bindParam(':TipoCampana', $txtTipoCampana);
         $sentenciaSQL->execute();
         header("Location: editorial.php");
         break;
 
     case "Editar":
-        $sentenciaSQL = $conexion->prepare("UPDATE editorial SET Nombre_Editorial = :nombre WHERE Id_editorial = :id");
-        $sentenciaSQL->bindParam(':nombre', $txtNombreEditorial);
+        $sentenciaSQL = $conexion->prepare("UPDATE tipo_campana SET tipo_campana = :TipoCampana WHERE id_tipo_campana = :id");
+        $sentenciaSQL->bindParam('TipoCampana', $txtTipoCampana);
         $sentenciaSQL->bindParam(':id', $txtID);
         $sentenciaSQL->execute();
         header("Location: editorial.php");
@@ -29,7 +29,12 @@ switch ($accion) {
         break;
     
     case "Seleccionar":
+        $sentenciaSQL = $conexion->prepare("SELECT * FROM tipo_campana WHERE id_tipo_campana = :id");
+        $sentenciaSQL->bindParam(':id', $txtID);
+        $sentenciaSQL->execute();
+        $TipoCampana = $sentenciaSQL->fetch(PDO::FETCH_LAZY);
 
+        $txtTipoCampana = $TipoCampana['tipo_campana'];
 
         
         break;
@@ -37,7 +42,7 @@ switch ($accion) {
     case "Mostrar":
         $sentenciaSQL = $conexion->prepare("SELECT * FROM tipo_campana ");
         $sentenciaSQL->execute();
-        $editorial = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+        $TipoCampana = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 
         $txtNombreEditorial = $editorial['Nombre_Editorial'];
         break;
@@ -70,7 +75,10 @@ $listaEditoriales = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 
     <form method="POST" enctype= "multipart/form-data">
     <div style="margin-bottom: 15px;">
+
+        <input type="text" placeholder="ID Tipo campaña" name="txtID" id="txtID" style="padding: 10px; width: 70%; font-size: 1em; border-radius: 5px; border: 1px solid #ccc;">
         <input type="text" placeholder="Ingresar nuevo tipo de campaña" name="txtTipoCampana" id="txtTipoCampana" style="padding: 10px; width: 70%; font-size: 1em; border-radius: 5px; border: 1px solid #ccc;">
+        
         <button name= "accion" value="Agregar" style="background-color: #27ae60; color: white; border: none; padding: 10px 20px; font-size: 1em; border-radius: 5px; cursor: pointer; margin-left: 10px;">
             Añadir
         </button>
