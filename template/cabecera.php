@@ -18,9 +18,10 @@ echo "Hola"
     <nav class="navbar navbar-expand-lg navbar-light bg-primary">
         <ul class="nav navbar-nav">
 
-            <li class="nav-item">
-                <a class="nav-link" href="#">CHiaPet</a>
-            </li>
+        <a class="navbar-brand d-flex align-items-center" href="index.php">
+            <img src="img/chiapet3.png" alt="Logo" width="40" height="40" class="d-inline-block align-text-top me-2">
+            CHIAPET
+        </a>
 
                <li class="nav-item">
                 <a class="nav-link" href="index.php">Inicio</a>
