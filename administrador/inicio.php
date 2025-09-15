@@ -11,5 +11,5 @@
                         </p>
                     </div>
                 </div>
-<?php include('template/.php'); ?>
+<?php include('template/pie.php'); ?>
             
