@@ -1,5 +1,3 @@
-<?php
-include_once('template/cabecera.php');
-echo "<h1>Campañas y Participación campañas</h1>";
-// Aquí va el contenido sobre campañas y participación
-?>
+<?php include("../template/cabecera.php"); ?>
+
+<?php include("../template/pie.php"); ?>

@@ -19,7 +19,7 @@
             <div class="collapse navbar-collapse" id="navbarAdmin">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="<?php echo $url;?>/administrador/seccion/registro.php">Registro Personas/Organizaciones</a>
+                        <a class="nav-link text-white" href="<?php echo $url;?>/administrador/seccion/registros.php">Registro Personas/Organizaciones</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="<?php echo $url;?>/administrador/seccion/eventos.php">Eventos y Campañas</a>
