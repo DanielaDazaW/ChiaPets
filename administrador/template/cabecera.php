@@ -35,7 +35,7 @@
                             Administrar Catálogos
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="administrarCatalogosDropdown">
-                            <li><a class="dropdown-item" href="<?php echo $url;?>/administrador/seccion/Catalogos/CatalogosAdministrativos.php">Catálogos administrativos</a></li>
+                            <li><a class="dropdown-item" href="<?php echo $url;?>/administrador/seccion/Catalogos/CatalogosAdministrativos.php">Catálogos Administrativos</a></li>
                             <li><a class="dropdown-item" href="<?php echo $url;?>/administrador/seccion/Catalogos/CatalogosUsuario.php">Catálogos Persona/Usuario</a></li>
                             <li><a class="dropdown-item" href="<?php echo $url;?>/administrador/seccion/Catalogos/CatalogosMascota.php">Catálogos Mascota</a></li>
                             <li><a class="dropdown-item" href="<?php echo $url;?>/administrador/seccion/Catalogos/CatalogosUbicacion.php">Catálogos Ubicación</a></li>

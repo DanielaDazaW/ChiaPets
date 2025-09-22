@@ -1,5 +1,5 @@
 <?php
-echo "Hola"
+
 ?>
 <!DOCTYPE html>
 <html lang = en>
@@ -7,14 +7,14 @@ echo "Hola"
     <meta charset = "UFT-8">
     <meta http-equiv= "X-UA-Compatible" content="IE=edge">
     <meta name="Viewport" content="width=device-width, initial-sacale=1.0">
-    <title>Sitio web </title>
+    
     <link rel="stylesheet" href="./css/bootstrap.min.css"/>
 </head>
 
 <body>
 
 
-    sitioweb
+ 
     <nav class="navbar navbar-expand-lg navbar-light bg-primary">
         <ul class="nav navbar-nav">
 
@@ -29,6 +29,10 @@ echo "Hola"
 
                <li class="nav-item">
                 <a class="nav-link" href="Nosotros.php">Nosotros</a>
+            </li>
+
+                           <li class="nav-item">
+                <a class="nav-link" href="Servicios.php">Servicios</a>
             </li>
 
                <li class="nav-item">

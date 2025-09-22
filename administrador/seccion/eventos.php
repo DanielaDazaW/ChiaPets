@@ -176,7 +176,7 @@ $listaZonas = $conexion->query("SELECT id_zona, zona FROM zona WHERE estado=1 OR
                 <option value="">Seleccione tipo</option>
                 <?php foreach ($listaTipoCampana as $tipo): ?>
                     <option value="<?= htmlspecialchars($tipo['id_tipo_campana']) ?>" <?= ($txtIDTipoCampana == $tipo['id_tipo_campana']) ? 'selected' : '' ?>>
-                        <?= htmlspecialchars($tipo['tipo_campa']) ?>
+                        <?= htmlspecialchars($tipo['tipo_campana']) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
