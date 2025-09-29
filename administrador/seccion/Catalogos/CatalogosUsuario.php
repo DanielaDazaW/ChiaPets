@@ -217,9 +217,9 @@ $listaGenero = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
                         <input type="text" required autocomplete="off" class="form-control" id="txtTipoDocumento" name="txtTipoDocumento" value="<?php echo $txtTipoDocumento; ?>" placeholder="Tipo de documento">
                     </div>
                     <div class="btn-group" role="group">
-                        <button type="submit" name="accion" value="AgregarGenero" <?php echo ($accion == "SeleccionarGenero") ? "disabled" : ""; ?> class="btn btn-success">Agregar</button>
-                        <button type="submit" name="accion" value="ModificarGenero" <?php echo ($accion != "SeleccionarGenero") ? "disabled" : ""; ?> class="btn btn-warning">Modificar</button>
-                        <button type="submit" name="accion" value="CancelarGenero" <?php echo ($accion != "SeleccionarGenero") ? "disabled" : ""; ?> class="btn btn-info">Cancelar</button>
+                        <button type="submit" name="accion" value="AgregarTipoDocumento" <?php echo ($accion == "SeleccionarTipoDocumento") ? "disabled" : ""; ?> class="btn btn-success">Agregar</button>
+                        <button type="submit" name="accion" value="ModificarTipoDocumento" <?php echo ($accion != "SeleccionarTipoDocumento") ? "disabled" : ""; ?> class="btn btn-warning">Modificar</button>
+                        <button type="submit" name="accion" value="CancelarTipoDocumento" <?php echo ($accion != "SeleccionarTipoDocumento") ? "disabled" : ""; ?> class="btn btn-info">Cancelar</button>
                     </div>
                 </form>
             </div>
