@@ -1,4 +1,19 @@
+<?php
+session_start();
+    if(!isset($_SESSION['usuario'])){
+        header("Location:../index.php");
+    }
+    else{
+        if($_SESSION['usuario']=="ok"){
+            $nombreUsuario=$_SESSION["nombreUsuario"];
+        }
+    }
+
+?>
+
 <!DOCTYPE html>
+
+
 <html lang="es">
 <head>
     <title>Administrador ChiaPet</title>
@@ -48,7 +63,7 @@
                         <a class="nav-link text-white" href="<?php echo $url;?>/administrador/seccion/cerrar.php">Cerrar</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-white" href="<?php echo $url;?>">Ver Sitio</a>
+                        <a class="nav-link text-white" href="<?php echo $url;?>/index.php">Ver Sitio</a>
                     </li>
                 </ul>
             </div>
