@@ -1,15 +1,3 @@
-<?php
-session_start();
-    if(!isset($_SESSION['usuario'])){
-        header("Location:../index.php");
-    }
-    else{
-        if($_SESSION['usuario']=="ok"){
-            $nombreUsuario=$_SESSION["nombreUsuario"];
-        }
-    }
-
-?>
 
 <!DOCTYPE html>
 
@@ -33,6 +21,9 @@ session_start();
             </button>
             <div class="collapse navbar-collapse" id="navbarAdmin">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="<?php echo $url;?>/administrador/seccion/roles.php">Administrar Roles</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="<?php echo $url;?>/administrador/seccion/registros.php">Registro Personas/Organizaciones</a>
                     </li>

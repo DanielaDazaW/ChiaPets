@@ -2,7 +2,7 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-include("administrador/config/bd.php");
+include("config/bd.php");
 
 $mensajeError = "";
 
@@ -11,23 +11,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contrasena = $_POST['contrasena'];
     
     $stmt = $conexion->prepare("
-        SELECT u.id_usuario, u.contrasena, p.nombres, p.apellidos 
+        SELECT u.id_usuario, u.contrasena, p.nombres, p.apellidos, u.id_tipo_usuario 
         FROM usuario u 
         JOIN personas p ON u.id_persona = p.id_persona 
-        WHERE p.estado = 1 AND p.correo = :correo
+        WHERE p.estado = 1 AND p.correo = :correo AND u.id_tipo_usuario = 1
     ");
     $stmt->bindParam(':correo', $correo);
     $stmt->execute();
     $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$usuario) {
-        $mensajeError = "Usuario no encontrado o inactivo.";
+        $mensajeError = "Usuario no encontrado, inactivo o no es administrador.";
     } else {
         if ($usuario && password_verify($contrasena, $usuario['contrasena'])) {
             $_SESSION['usuario_id'] = $usuario['id_usuario'];
             $_SESSION['usuario_nombre'] = $usuario['nombres'];
             $_SESSION['usuario_apellido'] = $usuario['apellidos'];
-            header("Location:index.php");
+            $_SESSION['usuario_tipo'] = $usuario['id_tipo_usuario'];
+            header("Location:inicio.php");
             exit();
         } else {
             $mensajeError = "Usuario o contraseña incorrectos.";
@@ -35,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-<?php include("template/cabecera.php"); ?>
+
 <style>
 .login-container {
     max-width: 360px;
@@ -115,9 +116,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="login-container">
     <div class="login-logo">
         <!-- Coloca aquí la imagen del logo (ajusta ruta si es necesario) -->
-        <img src="img/chiapet3.png" alt="Logo" style="width:100px;">
+        <img src="../img/chiapet3.png" alt="Logo" style="width:100px;">
     </div>
-    <div class="login-title">Iniciar Sesión</div>
+    <div class="login-title">Ingreso Administrador</div>
 
     <?php if ($mensajeError): ?>
         <div class="alert alert-danger"><?php echo htmlspecialchars($mensajeError); ?></div>
@@ -130,16 +131,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="form-group">
             <input type="password" id="contrasena" name="contrasena" required placeholder="Contraseña">
         </div>
-        <button type="submit" class="login-btn">Ingresar</button>
+        <button type="submit" class="login-btn">Ingresar como Administrador</button>
     </form>
     <div class="login-links">
-        <a href="#">¿Olvidó su contraseña?</a> <br>
-        <a href="registro.php">¿No tiene una cuenta? Registrarse</a> <br>
-        <form action="administrador/login_admin.php" method="get" style="margin-top:8px;">
-            <button type="submit" class="login-btn" style="background:#1da52b;">
-                Ingresar como Administrador
-            </button>
-        </form>
+        <a href="#">¿Olvidó su contraseña?</a>
     </div>
 </div>
-<?php include("template/pie.php"); ?>
+<?php include("../template/pie.php"); ?>
