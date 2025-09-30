@@ -79,7 +79,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 ?>
 
-<?php include("template/cabecera.php"); ?>
+<head>
+    <meta charset = "UFT-8">
+    <meta http-equiv= "X-UA-Compatible" content="IE=edge">
+    <meta name="Viewport" content="width=device-width, initial-sacale=1.0">
+    
+    <link rel="stylesheet" href="./css/bootstrap.min.css"/>
+</head>
+
+ <div class="container">
+        <br/><br/>
+
+        <div class="row">
+          
 <style>
   /* Usa estilos similares para coherencia */
 </style>

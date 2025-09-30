@@ -1,5 +1,10 @@
 <?php
+session_start();
 
+if (!isset($_SESSION['usuario_tipo']) || !in_array($_SESSION['usuario_tipo'], [1, 2])) {
+    header("Location: login.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang = en>

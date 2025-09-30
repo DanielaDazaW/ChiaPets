@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Validar si hay usuario y si es administrador
+if (!isset($_SESSION['usuario_tipo']) || $_SESSION['usuario_tipo'] != 1) {
+    header("Location: ../login.php");
+    exit();
+}
+?>
+
 
 <!DOCTYPE html>
 
@@ -21,6 +31,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarAdmin">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="<?php echo $url;?>/administrador/inicio.php">Inicio</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link text-white" href="<?php echo $url;?>/administrador/seccion/roles.php">Administrar Roles</a>
                     </li>
@@ -47,14 +60,13 @@
                             <li><a class="dropdown-item" href="<?php echo $url;?>/administrador/seccion/Catalogos/CatalogosUbicacion.php">Catálogos Ubicación</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="<?php echo $url;?>/administrador/inicio.php">Inicio</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="<?php echo $url;?>/administrador/seccion/cerrar.php">Cerrar</a>
-                    </li>
+
                     <li class="nav-item">
                         <a class="nav-link text-white" href="<?php echo $url;?>/index.php">Ver Sitio</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="<?php echo $url;?>/administrador/seccion/cerrar.php">Cerrar</a>
                     </li>
                 </ul>
             </div>

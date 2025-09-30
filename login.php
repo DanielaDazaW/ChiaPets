@@ -11,7 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $contrasena = $_POST['contrasena'];
     
     $stmt = $conexion->prepare("
-        SELECT u.id_usuario, u.contrasena, p.nombres, p.apellidos 
+        SELECT u.id_usuario, u.contrasena, p.nombres, p.apellidos,  u.id_tipo_usuario  
         FROM usuario u 
         JOIN personas p ON u.id_persona = p.id_persona 
         WHERE p.estado = 1 AND p.correo = :correo
@@ -27,6 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['usuario_id'] = $usuario['id_usuario'];
             $_SESSION['usuario_nombre'] = $usuario['nombres'];
             $_SESSION['usuario_apellido'] = $usuario['apellidos'];
+            $_SESSION['usuario_tipo'] = $usuario['id_tipo_usuario'];
             header("Location:index.php");
             exit();
         } else {
@@ -35,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
-<?php include("template/cabecera.php"); ?>
+
 <style>
 .login-container {
     max-width: 360px;
