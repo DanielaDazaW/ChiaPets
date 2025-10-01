@@ -38,15 +38,58 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <style>
+body {
+    background: linear-gradient(160deg, #e0ffc4 0%, #b9efa9 100%);
+    min-height: 100vh;
+    margin: 0;
+}
+
+.main-header {
+    width: 100%;
+    background: #d4f763; /* Verde principal del logo */
+    padding: 2.3rem 0 2.1rem 0;
+    box-shadow: 0 4px 15px rgba(80,150,60,0.14);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0;
+}
+
+.header-content {
+    text-align: center;
+}
+
+.header-logo {
+    width: 80px;
+    border-radius: 50%;
+    background: #C;
+    margin-bottom: 7px;
+}
+
+.header-title {
+    font-size: 2.25rem;
+    font-weight: bold;
+    color: #50770a;
+    margin-bottom: 0.4rem;
+    letter-spacing: 1.2px;
+}
+
+.header-desc {
+    font-size: 1.1rem;
+    color: #3d570b;
+    margin-bottom: 0.3rem;
+}
+
 .login-container {
     max-width: 360px;
-    margin: 3rem auto;
+    margin: 4rem auto;
     background: #d4f763;
     border-radius: 1rem;
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     padding: 2rem 1.5rem 1rem 1.5rem;
     text-align: center;
 }
+
 .login-logo {
     width: 100px;
     height: 100px;
@@ -58,18 +101,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     align-items: center;
     justify-content: center;
 }
+
 .login-title {
     font-size: 1.65rem;
     font-weight: bold;
     margin-bottom: 0.7rem;
     color: #5e921a;
 }
+
 .form-group label {
     font-weight: 500;
     color: #5e921a;
     text-align: left;
     width: 100%;
 }
+
 .form-group input {
     border-radius: 0.5rem;
     border: 1px solid #a9a9a9;
@@ -77,6 +123,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     width: 100%;
     margin-bottom: 18px;
 }
+
 .login-btn {
     background: #95e300;
     color: #fff;
@@ -90,20 +137,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     font-size: 1.1rem;
     transition: background 0.2s;
 }
+
 .login-btn:hover {
     background: #78bc15;
 }
+
 .login-links {
     margin-top: 8px;
 }
+
 .login-links a {
     color: #1da52b;
     text-decoration: none;
     font-weight: 600;
 }
+
 .login-links a:hover {
     text-decoration: underline;
 }
+
 .alert-danger {
     background: #ffd8dd;
     color: #c70000;
@@ -113,9 +165,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 </style>
 
+<header class="main-header">
+    <div class="header-content">
+        <img src="../img/chiapet3.png" alt="Logo Chiapet" class="header-logo">
+        <h1 class="header-title">Bienvenido a Chiapet</h1>
+        <p class="header-desc">Panel de administración - Protege cada huella con amor.</p>
+    </div>
+</header>
+
 <div class="login-container">
     <div class="login-logo">
-        <!-- Coloca aquí la imagen del logo (ajusta ruta si es necesario) -->
         <img src="../img/chiapet3.png" alt="Logo" style="width:100px;">
     </div>
     <div class="login-title">Ingreso Administrador</div>
@@ -137,4 +196,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <a href="#">¿Olvidó su contraseña?</a>
     </div>
 </div>
+
 <?php include("../template/pie.php"); ?>
