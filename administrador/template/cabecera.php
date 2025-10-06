@@ -1,11 +1,11 @@
 <?php
-session_start();
+//session_start();
 
 // Validar si hay usuario y si es administrador
-if (!isset($_SESSION['usuario_tipo']) || $_SESSION['usuario_tipo'] != 1) {
-    header("Location: ../login.php");
-    exit();
-}
+//if (!isset($_SESSION['usuario_tipo']) || $_SESSION['usuario_tipo'] != 1) {
+  //  header("Location: ../login.php");
+    //exit();
+//}
 ?>
 
 
