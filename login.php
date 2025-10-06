@@ -194,7 +194,7 @@ body {
         <button type="submit" class="login-btn">Ingresar</button>
     </form>
     <div class="login-links">
-        <a href="#">¿Olvidó su contraseña?</a> <br>
+        <a href="olvido_contrasena.php">¿Olvidó su contraseña?</a> <br>
         <a href="registro.php">¿No tiene una cuenta? Registrarse</a> <br>
         <form action="administrador/login_admin.php" method="get" style="margin-top:8px;">
             <button type="submit" class="login-btn" style="background:#1da52b;">
