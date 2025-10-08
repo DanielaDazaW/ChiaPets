@@ -36,7 +36,7 @@
                     </div>
                     <h4 class="card-title">Campañas de Vacunación</h4>
                     <p class="card-text">
-                        Consulta fechas y lugares de jornadas de vacunación y esterilización promovidas por la Alcaldía del Municipio, Fundaciones y demás.
+                        Consulta fechas y lugares de jornadas de vacunación y desparacitación promovidas por la Alcaldía del Municipio de Chía-Secretaria de salud, Fundaciones y demás.
                     </p>
                 </div>
             </div>
