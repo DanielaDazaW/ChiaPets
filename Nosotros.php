@@ -8,7 +8,7 @@
         <img src="img/chiapet3.png" alt="Chiapet Logo" class="img-fluid my-3" style="max-width: 180px; animation: zoomIn 1s;">
         
         <p class="lead">
-            Chiapet es un sistema de información desarrollado para el municipio de Chía, 
+            Chiapet es un prototipo de sistema de información desarrollado para el municipio de Chía, 
             diseñado para centralizar y gestionar la información de las mascotas del municipio. 
             Nuestro propósito es contribuir al bienestar animal y facilitar la interacción entre la 
             comunidad y las autoridades locales.
