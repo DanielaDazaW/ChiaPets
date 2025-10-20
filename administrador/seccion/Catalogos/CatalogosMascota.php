@@ -1,6 +1,7 @@
-<?php include("../../template/cabecera.php"); ?>
+<?php 
+include("../../config/bd.php");
+ob_start();
 
-<?php
 // Variables de catalogo mascotas
 $txtIDColor = isset($_POST['txtIDColor']) ? $_POST['txtIDColor'] : "";
 $txtColor = isset($_POST['txtColor']) ? $_POST['txtColor'] : "";
@@ -19,7 +20,7 @@ $txtTamano = isset($_POST['txtTamano']) ? $_POST['txtTamano'] : "";
 
 $accion = isset($_POST['accion']) ? $_POST['accion'] : "";
 
-include("../../config/bd.php");
+
 
 // Acciones CRUD
 switch ($accion) {
@@ -220,7 +221,9 @@ $sentenciaSQL = $conexion->prepare("SELECT * FROM tamano WHERE estado = 1");
 $sentenciaSQL->execute();
 $listaTamano = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
+<?php
+include("../../template/cabecera.php"); 
+?>
 <!-- Color -->
 <div class="row mb-5">
     <div class="col-md-5">
@@ -486,4 +489,6 @@ $listaTamano = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<?php include("../../template/pie.php"); ?>
+<?php include("../../template/pie.php"); 
+ob_end_flush();
+?>

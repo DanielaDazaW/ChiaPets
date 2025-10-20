@@ -2,11 +2,13 @@
 include('config/bd.php');
 include('template/cabecera.php');
 
+
 // Mascotas Registradas
 $sentenciaMascotas = $conexion->prepare("SELECT COUNT(*) AS total FROM mascotas");
 $sentenciaMascotas->execute();
 $rowMascotas = $sentenciaMascotas->fetch(PDO::FETCH_ASSOC);
 $totalMascotas = $rowMascotas['total'];
+
 
 // Usuarios (todos)
 $sentenciaUsuarios = $conexion->prepare("SELECT COUNT(*) AS total FROM personas");
@@ -14,11 +16,13 @@ $sentenciaUsuarios->execute();
 $rowUsuarios = $sentenciaUsuarios->fetch(PDO::FETCH_ASSOC);
 $totalUsuarios = $rowUsuarios['total'];
 
+
 // Campañas Activas (donde fecha_fin es mayor o igual a hoy)
 $sentenciaCampanas = $conexion->prepare("SELECT COUNT(*) AS total FROM campanias WHERE fecha_fin >= CURDATE()");
 $sentenciaCampanas->execute();
 $rowCampanas = $sentenciaCampanas->fetch(PDO::FETCH_ASSOC);
 $totalCampanas = $rowCampanas['total'];
+
 
 // Desparasitaciones Realizadas
 $sentenciaDesparasitaciones = $conexion->prepare("SELECT COUNT(*) AS total FROM desparasitaciones");
@@ -26,12 +30,14 @@ $sentenciaDesparasitaciones->execute();
 $rowDesparasitaciones = $sentenciaDesparasitaciones->fetch(PDO::FETCH_ASSOC);
 $totalDesparasitaciones = $rowDesparasitaciones['total'];
 
+
 // Vacunas Realizadas
 $sentenciaVacunas = $conexion->prepare("SELECT COUNT(*) AS total FROM vacunas");
 $sentenciaVacunas->execute();
 $rowVacunas = $sentenciaVacunas->fetch(PDO::FETCH_ASSOC);
 $totalVacunas = $rowVacunas['total'];
 ?>
+
 
 
 <div class="container mt-2">
@@ -42,6 +48,11 @@ $totalVacunas = $rowVacunas['total'];
         <div class="col">
             <h1 class="display-4 mb-0 text-center">Bienvenido, Administrador</h1>
             <p class="lead text-center">Desde aquí puedes gestionar todos los aspectos de CHIAPETS</p>
+                    <div class="text-center mt-3">
+                <a href="administrador/seccion/dashboard.php" class="btn btn-lg btn-outline-primary" style="font-size:1.3rem;">
+                    Ver Dashboard de Estadísticas
+                </a>
+            </div>
         </div>
     </div>
     <hr>
@@ -103,6 +114,7 @@ $totalVacunas = $rowVacunas['total'];
         </div>
     </div>
 </div>
+
 
 
 <?php include('template/pie.php'); ?>

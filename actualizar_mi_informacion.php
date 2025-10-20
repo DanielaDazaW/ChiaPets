@@ -1,54 +1,7 @@
-<style>
-.cabecera-chiapet {
-    width: 100%;
-    background: #a7e143;         /* verde de tu cabecera */
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;     /* centra horizontalmente */
-    box-sizing: border-box;
-    min-height: 56px;
-}
-.cabecera-chiapet-inner {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;                   /* separación entre logo y texto */
-}
-.cabecera-chiapet-logo {
-    width: 36px;                 /* tamaño menor del logo */
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.cabecera-chiapet-logo img {
-    width: 36px;
-    height: 36px;
-    display: block;
-}
-.cabecera-chiapet-titulo {
-    font-size: 1.35rem;          /* texto más pequeño */
-    font-weight: 600;
-    color: #15310a;              /* tono oscuro legible */
-    letter-spacing: 0.5px;
-    margin: 0;
-    line-height: 1;
-}
-</style>
-
-<div class="cabecera-chiapet">
-  <div class="cabecera-chiapet-inner">
-    <div class="cabecera-chiapet-logo">
-      <img src="img/chiapet3.png" alt="Logo CHIAPET">
-    </div>
-    <span class="cabecera-chiapet-titulo">CHIAPET</span>
-  </div>
-</div>
-
-
 <?php
-session_start();
+
 include("administrador/config/bd.php");
+include("template/cabecera.php");
 
 // Verificar sesión
 if (!isset($_SESSION['usuario_id'])) {
@@ -275,6 +228,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $persona) {
         </div>
     </form>
     <?php endif; ?>
+  
 </div>
 </body>
 </html>
+<?php include("template/pie.php") ?>

@@ -1,5 +1,5 @@
 <?php
-include("../template/cabecera.php");
+ob_start();
 include("../config/bd.php");
 
 # Variables vacunas
@@ -118,8 +118,9 @@ switch ($accionDesparasitacion) {
 $listaVacunas = $conexion->query("SELECT v.*, tv.tipo_vacuna, m.nombre FROM vacunas v LEFT JOIN tipo_vacuna tv ON v.id_tipo_vacuna = tv.id_tipo_vacuna LEFT JOIN mascotas m ON v.id_mascota = m.id_mascota WHERE v.estado=1 ORDER BY v.fecha_aplicacion DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 $listaDesparasitaciones = $conexion->query("SELECT d.*, p.producto, m.nombre FROM desparasitaciones d LEFT JOIN producto p ON d.id_producto = p.id_producto LEFT JOIN mascotas m ON d.id_mascota = m.id_mascota WHERE d.estado=1 ORDER BY d.fecha_aplicacion DESC")->fetchAll(PDO::FETCH_ASSOC);
-?>
 
+include("../template/cabecera.php");
+?>
 <div class="container">
     <h1>Gestión de Vacunas</h1>
     <form method="post" autocomplete="off">
@@ -271,4 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<?php include("../template/pie.php"); ?>
+<?php include("../template/pie.php"); 
+ob_end_flush();
+?>

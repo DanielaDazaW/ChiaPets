@@ -1,5 +1,7 @@
 <?php
-include("../template/cabecera.php");
+// Iniciar almacenamiento de salida para evitar errores con header()
+ob_start();
+
 include("../config/bd.php");
 
 // Variables formulario campañas
@@ -22,23 +24,7 @@ $txtIDZonaParticipacion = $_POST['txtIDZonaParticipacion'] ?? "";
 $txtFechaParticipacion = $_POST['txtFechaParticipacion'] ?? "";
 $accionParticipacion = $_POST['accionParticipacion'] ?? "";
 
-// Cargar listas selects
-$listaTipoCampana = $conexion->query("SELECT id_tipo_campana, tipo_campana FROM tipo_campana WHERE estado=1 ORDER BY tipo_campana")->fetchAll(PDO::FETCH_ASSOC);
-$listaOrganizaciones = $conexion->query("SELECT id_organizacion, organizacion FROM organizacion WHERE estado=1 ORDER BY organizacion")->fetchAll(PDO::FETCH_ASSOC);
-$listaCampanas = $conexion->query("SELECT id_campana, titulo FROM campanias WHERE estado=1 ORDER BY titulo")->fetchAll(PDO::FETCH_ASSOC);
-$listaZonas = $conexion->query("SELECT id_zona, zona FROM zona WHERE estado=1 ORDER BY zona")->fetchAll(PDO::FETCH_ASSOC);
-
-// Nueva consulta para mascota con dueño nombre completo
-$listaMascotas = $conexion->query("
-    SELECT m.id_mascota, CONCAT(m.nombre, ' (', p.nombres, ' ', p.apellidos, ')') AS nombre_con_dueño
-    FROM mascotas m
-    LEFT JOIN personas p ON m.id_persona = p.id_persona
-    WHERE m.estado=1
-    ORDER BY m.nombre
-")->fetchAll(PDO::FETCH_ASSOC);
-
-// Handlers campañas
-
+// Procesar acciones con redirección antes de incluir cabecera
 switch($accionCampana) {
     case "AgregarCampana":
         $stmt = $conexion->prepare("INSERT INTO campanias (titulo, descripcion, id_tipo_campana, fecha_inicio, fecha_fin, lugar, id_organizacion, estado) VALUES (:titulo, :descripcion, :id_tipo_campana, :fecha_inicio, :fecha_fin, :lugar, :id_organizacion, 1)");
@@ -51,6 +37,7 @@ switch($accionCampana) {
         $stmt->bindParam(':id_organizacion', $txtIDOrganizacion);
         $stmt->execute();
         header("Location: eventos.php");
+        ob_end_flush();
         exit;
     case "ModificarCampana":
         $stmt = $conexion->prepare("UPDATE campanias SET titulo=:titulo, descripcion=:descripcion, id_tipo_campana=:id_tipo_campana, fecha_inicio=:fecha_inicio, fecha_fin=:fecha_fin, lugar=:lugar, id_organizacion=:id_organizacion WHERE id_campana=:id");
@@ -64,10 +51,59 @@ switch($accionCampana) {
         $stmt->bindParam(':id', $txtIDCampana);
         $stmt->execute();
         header("Location: eventos.php");
+        ob_end_flush();
         exit;
     case "CancelarCampana":
         header("Location: eventos.php");
+        ob_end_flush();
         exit;
+    case "BorrarCampana":
+        $stmt = $conexion->prepare("UPDATE campanias SET estado=0 WHERE id_campana=:id");
+        $stmt->bindParam(':id', $txtIDCampana);
+        $stmt->execute();
+        header("Location: eventos.php");
+        ob_end_flush();
+        exit;
+}
+
+switch($accionParticipacion) {
+    case "AgregarParticipacion":
+        $fecha = date('Y-m-d');
+        $stmt = $conexion->prepare("INSERT INTO participacion_campania (id_campana, id_mascota, id_zona, fecha_participacion, estado) VALUES (:id_campana, :id_mascota, :id_zona, :fecha_participacion, 1)");
+        $stmt->bindParam(':id_campana', $txtIDCampanaParticipacion);
+        $stmt->bindParam(':id_mascota', $txtIDMascotaParticipacion);
+        $stmt->bindParam(':id_zona', $txtIDZonaParticipacion);
+        $stmt->bindParam(':fecha_participacion', $fecha);
+        $stmt->execute();
+        header("Location: eventos.php");
+        ob_end_flush();
+        exit;
+    case "ModificarParticipacion":
+        $stmt = $conexion->prepare("UPDATE participacion_campania SET id_campana=:id_campana, id_mascota=:id_mascota, id_zona=:id_zona, fecha_participacion=:fecha_participacion WHERE id_participacion=:id");
+        $stmt->bindParam(':id_campana', $txtIDCampanaParticipacion);
+        $stmt->bindParam(':id_mascota', $txtIDMascotaParticipacion);
+        $stmt->bindParam(':id_zona', $txtIDZonaParticipacion);
+        $stmt->bindParam(':fecha_participacion', $txtFechaParticipacion);
+        $stmt->bindParam(':id', $txtIDParticipacion);
+        $stmt->execute();
+        header("Location: eventos.php");
+        ob_end_flush();
+        exit;
+    case "CancelarParticipacion":
+        header("Location: eventos.php");
+        ob_end_flush();
+        exit;
+    case "BorrarParticipacion":
+        $stmt = $conexion->prepare("UPDATE participacion_campania SET estado=0 WHERE id_participacion=:id");
+        $stmt->bindParam(':id', $txtIDParticipacion);
+        $stmt->execute();
+        header("Location: eventos.php");
+        ob_end_flush();
+        exit;
+}
+
+// Para seleccionar registros sin redireccionar
+switch($accionCampana) {
     case "SeleccionarCampana":
         $stmt = $conexion->prepare("SELECT * FROM campanias WHERE id_campana=:id");
         $stmt->bindParam(':id', $txtIDCampana);
@@ -81,40 +117,9 @@ switch($accionCampana) {
         $txtLugar = $row['lugar'];
         $txtIDOrganizacion = $row['id_organizacion'];
         break;
-    case "BorrarCampana":
-        $stmt = $conexion->prepare("UPDATE campanias SET estado=0 WHERE id_campana=:id");
-        $stmt->bindParam(':id', $txtIDCampana);
-        $stmt->execute();
-        header("Location: eventos.php");
-        exit;
 }
 
-// Handlers participaciones
-
 switch($accionParticipacion) {
-    case "AgregarParticipacion":
-        $fecha = date('Y-m-d');
-        $stmt = $conexion->prepare("INSERT INTO participacion_campania (id_campana, id_mascota, id_zona, fecha_participacion, estado) VALUES (:id_campana, :id_mascota, :id_zona, :fecha_participacion, 1)");
-        $stmt->bindParam(':id_campana', $txtIDCampanaParticipacion);
-        $stmt->bindParam(':id_mascota', $txtIDMascotaParticipacion);
-        $stmt->bindParam(':id_zona', $txtIDZonaParticipacion);
-        $stmt->bindParam(':fecha_participacion', $fecha);
-        $stmt->execute();
-        header("Location: eventos.php");
-        exit;
-    case "ModificarParticipacion":
-        $stmt = $conexion->prepare("UPDATE participacion_campania SET id_campana=:id_campana, id_mascota=:id_mascota, id_zona=:id_zona, fecha_participacion=:fecha_participacion WHERE id_participacion=:id");
-        $stmt->bindParam(':id_campana', $txtIDCampanaParticipacion);
-        $stmt->bindParam(':id_mascota', $txtIDMascotaParticipacion);
-        $stmt->bindParam(':id_zona', $txtIDZonaParticipacion);
-        $stmt->bindParam(':fecha_participacion', $txtFechaParticipacion);
-        $stmt->bindParam(':id', $txtIDParticipacion);
-        $stmt->execute();
-        header("Location: eventos.php");
-        exit;
-    case "CancelarParticipacion":
-        header("Location: eventos.php");
-        exit;
     case "SeleccionarParticipacion":
         $stmt = $conexion->prepare("SELECT * FROM participacion_campania WHERE id_participacion=:id");
         $stmt->bindParam(':id', $txtIDParticipacion);
@@ -125,16 +130,21 @@ switch($accionParticipacion) {
         $txtIDZonaParticipacion = $row['id_zona'];
         $txtFechaParticipacion = $row['fecha_participacion'];
         break;
-    case "BorrarParticipacion":
-        $stmt = $conexion->prepare("UPDATE participacion_campania SET estado=0 WHERE id_participacion=:id");
-        $stmt->bindParam(':id', $txtIDParticipacion);
-        $stmt->execute();
-        header("Location: eventos.php");
-        exit;
 }
 
+// Cargar listas selects y datos para mostrar
+$listaTipoCampana = $conexion->query("SELECT id_tipo_campana, tipo_campana FROM tipo_campana WHERE estado=1 ORDER BY tipo_campana")->fetchAll(PDO::FETCH_ASSOC);
+$listaOrganizaciones = $conexion->query("SELECT id_organizacion, organizacion FROM organizacion WHERE estado=1 ORDER BY organizacion")->fetchAll(PDO::FETCH_ASSOC);
+$listaCampanas = $conexion->query("SELECT id_campana, titulo FROM campanias WHERE estado=1 ORDER BY titulo")->fetchAll(PDO::FETCH_ASSOC);
+$listaZonas = $conexion->query("SELECT id_zona, zona FROM zona WHERE estado=1 ORDER BY zona")->fetchAll(PDO::FETCH_ASSOC);
+$listaMascotas = $conexion->query("
+    SELECT m.id_mascota, CONCAT(m.nombre, ' (', p.nombres, ' ', p.apellidos, ')') AS nombre_con_dueño
+    FROM mascotas m
+    LEFT JOIN personas p ON m.id_persona = p.id_persona
+    WHERE m.estado=1
+    ORDER BY m.nombre
+")->fetchAll(PDO::FETCH_ASSOC);
 
-// Load data for showing
 $campanasStmt = $conexion->prepare("SELECT c.*, t.tipo_campana, o.organizacion 
                                    FROM campanias c 
                                    LEFT JOIN tipo_campana t ON c.id_tipo_campana = t.id_tipo_campana 
@@ -154,8 +164,7 @@ $participacionesStmt = $conexion->prepare("SELECT p.*, ca.titulo, m.nombre, z.zo
 $participacionesStmt->execute();
 $participaciones = $participacionesStmt->fetchAll(PDO::FETCH_ASSOC);
 
-$listaZonas = $conexion->query("SELECT id_zona, zona FROM zona WHERE estado=1 ORDER BY zona")->fetchAll(PDO::FETCH_ASSOC);
-
+include("../template/cabecera.php");
 ?>
 
 <div class="container">
@@ -328,7 +337,6 @@ $listaZonas = $conexion->query("SELECT id_zona, zona FROM zona WHERE estado=1 OR
         <?php endforeach; ?>
         </tbody>
     </table>
-
 </div>
 
 <script>
@@ -354,4 +362,9 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
-<?php include("../template/pie.php"); ?>
+<?php
+include("../template/pie.php");
+
+// Enviar el buffer y desactivar almacenamiento de salida
+ob_end_flush();
+?>

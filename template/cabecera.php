@@ -1,10 +1,10 @@
 <?php
-//session_start();
+session_start();
 
-//if (!isset($_SESSION['usuario_tipo']) || !in_array($_SESSION['usuario_tipo'], [1, 2])) {
-  //  header("Location: login.php");
-    //exit();
-//}
+if (!isset($_SESSION['usuario_tipo']) || !in_array($_SESSION['usuario_tipo'], [1, 2])) {
+  header("Location: login.php");
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang = en>
@@ -42,6 +42,9 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="actualizar_mi_informacion.php">Actualizar mi información</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="reportes_mascota.php">Reportes de mis mascotas</a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto align-items-center">

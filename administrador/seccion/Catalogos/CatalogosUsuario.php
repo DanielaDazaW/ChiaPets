@@ -1,6 +1,7 @@
-<?php include("../../template/cabecera.php"); ?>
-
 <?php
+ob_start();
+include("../../config/bd.php");
+ 
 // Variables Tipo Usuario
 $txtIDTipoUsuario = isset($_POST['txtIDTipoUsuario']) ? $_POST['txtIDTipoUsuario'] : "";
 $txtTipoUsuario = isset($_POST['txtTipoUsuario']) ? $_POST['txtTipoUsuario'] : "";
@@ -149,6 +150,8 @@ $listaTipoDocumento = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 $sentenciaSQL = $conexion->prepare("SELECT * FROM genero WHERE estado = 1");
 $sentenciaSQL->execute();
 $listaGenero = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+
+include("../../template/cabecera.php"); 
 ?>
 
 <!-- FORMULARIO Y TABLA TIPO USUARIO -->
@@ -310,4 +313,6 @@ $listaGenero = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
     </div><!-- col-md-7 -->
 </div>
 
-<?php include("../../template/pie.php"); ?>
+<?php include("../../template/pie.php"); 
+ob_end_flush();
+?>

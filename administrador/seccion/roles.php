@@ -1,4 +1,5 @@
 <?php
+ob_start();
 include("../config/bd.php");
 
 // Variables formulario
@@ -285,4 +286,6 @@ include("../template/cabecera.php");
     </table>
 </div>
 
-<?php include("../template/pie.php"); ?>
+<?php include("../template/pie.php"); 
+ob_end_flush();
+?>

@@ -1,7 +1,8 @@
-<?php include("../template/cabecera.php"); ?>
+
 <?php include("../config/bd.php"); ?>
 
 <?php
+ob_start();
 // Variables y switches igual que antes, no cambia nada
 $txtIDPersona = isset($_POST['txtIDPersona']) ? $_POST['txtIDPersona'] : "";
 $txtNombres = isset($_POST['txtNombres']) ? $_POST['txtNombres'] : "";
@@ -143,6 +144,8 @@ $listaPersonas = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 $sentenciaSQL = $conexion->prepare("SELECT o.id_organizacion, o.organizacion, o.contacto, t.tipo_organizacion FROM organizacion o INNER JOIN tipo_organizacion t ON o.id_tipo_organizacion = t.id_tipo_organizacion WHERE o.estado = 1");
 $sentenciaSQL->execute();
 $listaOrganizaciones = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+
+include("../template/cabecera.php"); 
 ?>
 
 <div class="container">
@@ -335,4 +338,6 @@ $listaOrganizaciones = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<?php include("../template/pie.php"); ?>
+<?php include("../template/pie.php"); 
+ob_end_flush();
+?>

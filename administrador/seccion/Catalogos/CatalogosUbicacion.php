@@ -1,6 +1,7 @@
-<?php include("../../template/cabecera.php"); ?>
-
 <?php
+ob_start();
+include("../../config/bd.php");
+
 $txtIDZona = isset($_POST['txtIDZona']) ? $_POST['txtIDZona'] : "";
 $txtZona = isset($_POST['txtZona']) ? $_POST['txtZona'] : "";
 $accion = isset($_POST['accion']) ? $_POST['accion'] : "";
@@ -50,6 +51,8 @@ switch ($accion) {
 $sentenciaSQL = $conexion->prepare("SELECT * FROM zona WHERE estado = 1");
 $sentenciaSQL->execute();
 $listaZona = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+
+include("../../template/cabecera.php"); 
 ?>
 
 <div class="row">
@@ -104,4 +107,6 @@ $listaZona = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<?php include("../../template/pie.php"); ?>
+<?php include("../../template/pie.php"); 
+ob_end_flush();
+?>

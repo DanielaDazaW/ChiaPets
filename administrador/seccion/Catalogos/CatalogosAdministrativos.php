@@ -1,6 +1,6 @@
-<?php include("../../template/cabecera.php"); ?>
-
 <?php
+include("../../config/bd.php");
+ob_start();
 // Variables catálogos
 $txtIDProducto = $_POST['txtIDProducto'] ?? "";
 $txtProducto = $_POST['txtProducto'] ?? "";
@@ -19,7 +19,7 @@ $txtTipoOrganizacion = $_POST['txtTipoOrganizacion'] ?? "";
 
 $accion = $_POST['accion'] ?? "";
 
-include("../../config/bd.php");
+
 
 // Manejo de acciones
 switch ($accion) {
@@ -186,9 +186,10 @@ $listaTipoReporte = $conexion->query("SELECT * FROM tipo_reporte WHERE estado = 
 $listaTipoVacuna = $conexion->query("SELECT * FROM tipo_vacuna WHERE estado = 1 ORDER BY tipo_vacuna")->fetchAll(PDO::FETCH_ASSOC);
 $listaTipoOrganizacion = $conexion->query("SELECT * FROM tipo_organizacion WHERE estado = 1 ORDER BY tipo_organizacion")->fetchAll(PDO::FETCH_ASSOC);
 
+
+
+ include("../../template/cabecera.php"); 
 ?>
-
-
 <div class="container">
   <h1>Administrativos - Catálogos</h1>
 
@@ -456,4 +457,6 @@ $listaTipoOrganizacion = $conexion->query("SELECT * FROM tipo_organizacion WHERE
   </div>
 </div>
 
-<?php include("../../template/pie.php"); ?>
+<?php include("../../template/pie.php"); 
+ob_end_flush();
+?>
