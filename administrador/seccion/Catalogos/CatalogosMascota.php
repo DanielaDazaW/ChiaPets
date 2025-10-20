@@ -18,6 +18,9 @@ $txtSexo = isset($_POST['txtSexo']) ? $_POST['txtSexo'] : "";
 $txtIDTamano = isset($_POST['txtIDTamano']) ? $_POST['txtIDTamano'] : "";
 $txtTamano = isset($_POST['txtTamano']) ? $_POST['txtTamano'] : "";
 
+$txtIDEstadoReporte = isset($_POST['txtIDEstadoReporte']) ? $_POST['txtIDEstadoReporte'] : "";
+$txtEstadoReporte = isset($_POST['txtEstadoReporte']) ? $_POST['txtEstadoReporte'] : "";
+
 $accion = isset($_POST['accion']) ? $_POST['accion'] : "";
 
 
@@ -198,6 +201,42 @@ switch ($accion) {
         header("Location: CatalogosMascota.php");
         exit;
         break;
+
+    // Estado reporte
+    case "AgregarEstadoReporte":
+        $sentenciaSQL = $conexion->prepare("INSERT INTO estado_reporte (estado_reporte, estado) VALUES (:estado_reporte, 1)");
+        $sentenciaSQL->bindParam(':estado_reporte', $txtEstadoReporte);
+        $sentenciaSQL->execute();
+        header("Location: CatalogosMascota.php");
+        exit;
+        break;
+    case "ModificarEstadoReporte":
+        $sentenciaSQL = $conexion->prepare("UPDATE estado_reporte SET estado_reporte = :estado_reporte WHERE id_estado_reporte = :id");
+        $sentenciaSQL->bindParam(':estado_reporte', $txtEstadoReporte);
+        $sentenciaSQL->bindParam(':id', $txtIDEstadoReporte);
+        $sentenciaSQL->execute();
+        header("Location: CatalogosMascota.php");
+        exit;
+        break;
+    case "CancelarEstadoReporte":
+        header("Location: CatalogosMascota.php");
+        exit;
+        break;
+    case "SeleccionarEstadoReporte":
+        $sentenciaSQL = $conexion->prepare("SELECT * FROM estado_reporte WHERE id_estado_reporte = :id");
+        $sentenciaSQL->bindParam(':id', $txtIDEstadoReporte);
+        $sentenciaSQL->execute();
+        $registro = $sentenciaSQL->fetch(PDO::FETCH_ASSOC);
+        $txtEstadoReporte = $registro['estado_reporte'];
+        break;
+    case "BorrarEstadoReporte":
+        $sentenciaSQL = $conexion->prepare("UPDATE estado_reporte SET estado = 0 WHERE id_estado_reporte = :id");
+        $sentenciaSQL->bindParam(':id', $txtIDEstadoReporte);
+        $sentenciaSQL->execute();
+        header("Location: CatalogosMascota.php");
+        exit;
+        break;
+
 }
 
 // Consultas para mostrar solo registros activos
@@ -220,6 +259,11 @@ $listaSexo = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 $sentenciaSQL = $conexion->prepare("SELECT * FROM tamano WHERE estado = 1");
 $sentenciaSQL->execute();
 $listaTamano = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+
+$sentenciaSQL = $conexion->prepare("SELECT * FROM estado_reporte WHERE estado = 1");
+$sentenciaSQL->execute();
+$listaEstadoReporte = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 <?php
 include("../../template/cabecera.php"); 
@@ -480,6 +524,58 @@ include("../../template/cabecera.php");
                             <form method="post" style="display:inline-block;">
                                 <input type="hidden" name="txtIDTamano" value="<?php echo $item['id_tamano']; ?>">
                                 <input type="submit" name="accion" value="BorrarTamano" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas desactivar este tamaño?');" />
+                            </form>
+                        </td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- Estado Reporte -->
+<div class="row mb-5">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">Datos de Estado de Reporte</div>
+            <div class="card-body">
+                <form method="POST" autocomplete="off">
+                    <input type="hidden" name="txtIDEstadoReporte" value="<?php echo $txtIDEstadoReporte; ?>">
+                    <div class="mb-3">
+                        <label for="txtEstadoReporte" class="form-label">Estado de Reporte:</label>
+                        <input type="text" class="form-control" id="txtEstadoReporte" name="txtEstadoReporte" required autocomplete="off" placeholder="Escriba un estado (ej: abierto, cerrado)" value="<?php echo $txtEstadoReporte; ?>">
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button type="submit" name="accion" value="AgregarEstadoReporte" <?php echo ($accion == "SeleccionarEstadoReporte") ? "disabled" : ""; ?> class="btn btn-success">Agregar</button>
+                        <button type="submit" name="accion" value="ModificarEstadoReporte" <?php echo ($accion != "SeleccionarEstadoReporte") ? "disabled" : ""; ?> class="btn btn-warning">Modificar</button>
+                        <button type="submit" name="accion" value="CancelarEstadoReporte" <?php echo ($accion != "SeleccionarEstadoReporte") ? "disabled" : ""; ?> class="btn btn-info">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Estado Reporte</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($listaEstadoReporte as $item) { ?>
+                    <tr>
+                        <td><?php echo $item['id_estado_reporte']; ?></td>
+                        <td><?php echo htmlspecialchars($item['estado_reporte']); ?></td>
+                        <td>
+                            <form method="post" style="display:inline-block;">
+                                <input type="hidden" name="txtIDEstadoReporte" value="<?php echo $item['id_estado_reporte']; ?>">
+                                <input type="submit" name="accion" value="SeleccionarEstadoReporte" class="btn btn-primary btn-sm" />
+                            </form>
+                            <form method="post" style="display:inline-block;">
+                                <input type="hidden" name="txtIDEstadoReporte" value="<?php echo $item['id_estado_reporte']; ?>">
+                                <input type="submit" name="accion" value="BorrarEstadoReporte" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro que deseas desactivar este estado?');" />
                             </form>
                         </td>
                     </tr>

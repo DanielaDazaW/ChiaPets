@@ -2,7 +2,7 @@
 ob_start();
 include("../config/bd.php");
 
-// VARIABLES
+// ------- VARIABLES MASCOTA -------
 $txtID = $_POST['txtID'] ?? "";
 $txtNombre = $_POST['txtNombre'] ?? "";
 $txtPeso = $_POST['txtPeso'] ?? "";
@@ -18,11 +18,19 @@ $txtFechaNacimiento = $_POST['txtFechaNacimiento'] ?? "";
 $txtEsterilizado = $_POST['txtEsterilizado'] ?? null;
 $txtMicrochipCodigo = $_POST['txtMicrochipCodigo'] ?? null;
 $txtFotoUrl = $_POST['txtFotoUrl'] ?? "";
-
 $archivo = $_FILES['archivo'] ?? null;
 $accion = $_POST['accion'] ?? "";
 
-// Selects
+// ------- VARIABLES REPORTE -------
+$txtIDReporte = $_POST['txtIDReporte'] ?? "";
+$txtIDMascota = $_POST['txtIDMascota'] ?? "";
+$txtIDTipoReporte = $_POST['txtIDTipoReporte'] ?? "";
+$txtDescripcion = $_POST['txtDescripcion'] ?? "";
+$txtUbicacion = $_POST['txtUbicacion'] ?? "";
+$txtIDEstadoReporte = $_POST['txtIDEstadoReporte'] ?? "";
+$accionReporte = $_POST['accionReporte'] ?? "";
+
+// ------- SELECTS -------
 $listaEspecies = $conexion->query("SELECT id_especie, tipo_especie FROM especie WHERE estado=1")->fetchAll(PDO::FETCH_ASSOC);
 $listaRazas = $conexion->query("SELECT id_raza, tipo_raza FROM raza WHERE estado=1")->fetchAll(PDO::FETCH_ASSOC);
 $listaSexos = $conexion->query("SELECT id_sexo, tipo_sexo FROM sexo WHERE estado=1")->fetchAll(PDO::FETCH_ASSOC);
@@ -30,11 +38,117 @@ $listaColores = $conexion->query("SELECT id_color, color FROM color WHERE estado
 $listaTamanos = $conexion->query("SELECT id_tamano, tamano FROM tamano WHERE estado=1")->fetchAll(PDO::FETCH_ASSOC);
 $listaPersonas = $conexion->query("SELECT id_persona, CONCAT(nombres, ' ', apellidos, ' (', numero_documento, ')') AS nombre_completo FROM personas WHERE estado=1")->fetchAll(PDO::FETCH_ASSOC);
 $listaOrganizaciones = $conexion->query("SELECT id_organizacion, organizacion FROM organizacion WHERE estado=1")->fetchAll(PDO::FETCH_ASSOC);
-$listaTiposReporte = $conexion->query("SELECT id_tipo_reporte, tipo_reporte FROM tipo_reporte")->fetchAll(PDO::FETCH_ASSOC);
 
-// Procesos de acción (igual que tu código original: Agregar, Modificar, Seleccionar, Borrar)
+// ------- CRUD Mascotas -------
+switch ($accion) {
+    case "Agregar":
+        $nombreArchivo = "imagen.jpg";
+        if ($archivo && $archivo['name']) {
+            $nombreArchivo = time() . "_" . $archivo['name'];
+            move_uploaded_file($archivo['tmp_name'], "../img/" . $nombreArchivo);
+        }
+        $fechaRegistro = date('Y-m-d');
+        $stmt = $conexion->prepare("
+            INSERT INTO mascotas 
+            (nombre, peso, id_persona, id_organizacion, id_especie, id_raza, id_sexo, id_color, id_tamano, fecha_nacimiento, esterilizado, microchip_codigo, foto_url, estado, fecha_registro)
+            VALUES 
+            (:nombre, :peso, :id_persona, :id_organizacion, :id_especie, :id_raza, :id_sexo, :id_color, :id_tamano, :fecha_nacimiento, :esterilizado, :microchip_codigo, :foto_url, 1, :fecha_registro)
+        ");
+        $stmt->bindParam(':nombre', $txtNombre);
+        $stmt->bindParam(':peso', $txtPeso);
+        if ($txtDuenoTipo === "persona") {
+            $stmt->bindParam(':id_persona', $txtIDPersona);
+            $null = null; $stmt->bindParam(':id_organizacion', $null);
+        } else {
+            $null = null; $stmt->bindParam(':id_persona', $null);
+            $stmt->bindParam(':id_organizacion', $txtIDOrganizacion);
+        }
+        $stmt->bindParam(':id_especie', $txtIDEspecie);
+        $stmt->bindParam(':id_raza', $txtIDRaza);
+        $stmt->bindParam(':id_sexo', $txtIDSexo);
+        $stmt->bindParam(':id_color', $txtIDColor);
+        $stmt->bindParam(':id_tamano', $txtIDTamano);
+        $stmt->bindParam(':fecha_nacimiento', $txtFechaNacimiento);
+        $stmt->bindParam(':esterilizado', $txtEsterilizado);
+        $stmt->bindParam(':microchip_codigo', $txtMicrochipCodigo);
+        $stmt->bindParam(':foto_url', $nombreArchivo);
+        $stmt->bindParam(':fecha_registro', $fechaRegistro);
+        $stmt->execute();
+        header("Location: mascotas.php");
+        exit;
+    case "Modificar":
+        $nombreArchivo = $txtFotoUrl;
+        if ($archivo && $archivo['name']) {
+            $stmtImg = $conexion->prepare("SELECT foto_url FROM mascotas WHERE id_mascota=:id");
+            $stmtImg->bindParam(':id', $txtID);
+            $stmtImg->execute();
+            $registroImg = $stmtImg->fetch(PDO::FETCH_ASSOC);
+            $nuevoNombre = time() . "_" . $archivo['name'];
+            move_uploaded_file($archivo['tmp_name'], "../img/" . $nuevoNombre);
+            if ($registroImg['foto_url'] && $registroImg['foto_url'] !== 'imagen.jpg' && file_exists("../img/" . $registroImg['foto_url'])) {
+                unlink("../img/" . $registroImg['foto_url']);
+            }
+            $nombreArchivo = $nuevoNombre;
+        }
+        $stmt = $conexion->prepare("
+            UPDATE mascotas SET nombre=:nombre, peso=:peso, id_persona=:id_persona, id_organizacion=:id_organizacion, id_especie=:id_especie, 
+            id_raza=:id_raza, id_sexo=:id_sexo, id_color=:id_color, id_tamano=:id_tamano, fecha_nacimiento=:fecha_nacimiento, 
+            esterilizado=:esterilizado, microchip_codigo=:microchip_codigo, foto_url=:foto_url 
+            WHERE id_mascota=:id
+        ");
+        if ($txtDuenoTipo === "persona") {
+            $stmt->bindParam(':id_persona', $txtIDPersona);
+            $null = null; $stmt->bindParam(':id_organizacion', $null);
+        } else {
+            $null = null; $stmt->bindParam(':id_persona', $null);
+            $stmt->bindParam(':id_organizacion', $txtIDOrganizacion);
+        }
+        $stmt->bindParam(':nombre', $txtNombre);
+        $stmt->bindParam(':peso', $txtPeso);
+        $stmt->bindParam(':id_especie', $txtIDEspecie);
+        $stmt->bindParam(':id_raza', $txtIDRaza);
+        $stmt->bindParam(':id_sexo', $txtIDSexo);
+        $stmt->bindParam(':id_color', $txtIDColor);
+        $stmt->bindParam(':id_tamano', $txtIDTamano);
+        $stmt->bindParam(':fecha_nacimiento', $txtFechaNacimiento);
+        $stmt->bindParam(':esterilizado', $txtEsterilizado);
+        $stmt->bindParam(':microchip_codigo', $txtMicrochipCodigo);
+        $stmt->bindParam(':foto_url', $nombreArchivo);
+        $stmt->bindParam(':id', $txtID);
+        $stmt->execute();
+        header("Location: mascotas.php");
+        exit;
+    case "Seleccionar":
+        $stmt = $conexion->prepare("SELECT * FROM mascotas WHERE id_mascota=:id");
+        $stmt->bindParam(':id', $txtID);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) {
+            $txtNombre = $row['nombre'];
+            $txtPeso = $row['peso'];
+            $txtIDEspecie = $row['id_especie'];
+            $txtIDRaza = $row['id_raza'];
+            $txtIDSexo = $row['id_sexo'];
+            $txtIDColor = $row['id_color'];
+            $txtIDTamano = $row['id_tamano'];
+            $txtFechaNacimiento = $row['fecha_nacimiento'];
+            $txtEsterilizado = $row['esterilizado'];
+            $txtMicrochipCodigo = $row['microchip_codigo'];
+            $txtFotoUrl = $row['foto_url'];
+            $txtIDPersona = $row['id_persona'];
+            $txtIDOrganizacion = $row['id_organizacion'];
+            $txtDuenoTipo = $row['id_organizacion'] ? 'organizacion' : 'persona';
+        }
+        break;
+    case "Borrar":
+        $stmt = $conexion->prepare("UPDATE mascotas SET estado=0 WHERE id_mascota=:id");
+        $stmt->bindParam(':id', $txtID);
+        $stmt->execute();
+        header("Location: mascotas.php");
+        exit;
+}
 
-// Mascotas para listados
+// Mascotas para listados CRUD y para reportes
 $sql = "SELECT m.*, e.tipo_especie, r.tipo_raza, s.tipo_sexo, c.color, t.tamano, p.nombres AS nombre_persona, p.numero_documento, o.organizacion
 FROM mascotas m
 LEFT JOIN especie e ON m.id_especie = e.id_especie
@@ -47,14 +161,103 @@ LEFT JOIN organizacion o ON m.id_organizacion = o.id_organizacion
 WHERE m.estado=1";
 $stmtData = $conexion->prepare($sql);
 $stmtData->execute();
-$listaMascotas = $stmtData->fetchAll(PDO::FETCH_ASSOC);
+$listaMascotasFull = $stmtData->fetchAll(PDO::FETCH_ASSOC);
+
+// Listas para reportes
+$selectMascotas = $conexion->query("
+    SELECT m.id_mascota, m.nombre, 
+        CASE 
+            WHEN p.nombres IS NOT NULL THEN CONCAT(p.nombres, ' ', p.apellidos, ' (', p.numero_documento, ')')
+            WHEN o.organizacion IS NOT NULL THEN CONCAT(o.organizacion, ' (ORG)')
+            ELSE 'Sin dueño'
+        END AS duenio
+    FROM mascotas m
+    LEFT JOIN personas p ON m.id_persona = p.id_persona
+    LEFT JOIN organizacion o ON m.id_organizacion = o.id_organizacion
+    WHERE m.estado=1
+    ORDER BY m.nombre    
+")->fetchAll(PDO::FETCH_ASSOC);
+
+$listaTiposReporte = $conexion->query("SELECT id_tipo_reporte, tipo_reporte FROM tipo_reporte")->fetchAll(PDO::FETCH_ASSOC);
+$listaEstadosReporte = $conexion->query("SELECT id_estado_reporte, estado_reporte FROM estado_reporte WHERE estado=1")->fetchAll(PDO::FETCH_ASSOC);
+
+// ------- CRUD Reportes -------
+switch ($accionReporte) {
+    case "Agregar":
+        if($txtIDMascota && $txtIDTipoReporte && $txtDescripcion && $txtUbicacion && $txtIDEstadoReporte){
+            $fecha = date('Y-m-d');
+            $stmt = $conexion->prepare("
+                INSERT INTO reportes (id_mascota, id_tipo_reporte, descripcion, ubicacion, id_estado_reporte, fecha_reporte, estado)
+                VALUES (?, ?, ?, ?, ?, ?, 1)
+            ");
+            $stmt->execute([$txtIDMascota, $txtIDTipoReporte, $txtDescripcion, $txtUbicacion, $txtIDEstadoReporte, $fecha]);
+        }
+        header("Location: mascotas.php");
+        exit;
+    case "Modificar":
+        if($txtIDReporte && $txtIDMascota && $txtIDTipoReporte && $txtDescripcion && $txtUbicacion && $txtIDEstadoReporte){
+            $stmt = $conexion->prepare("
+                UPDATE reportes SET
+                    id_mascota = ?,
+                    id_tipo_reporte = ?,
+                    descripcion = ?,
+                    ubicacion = ?,
+                    id_estado_reporte = ?
+                WHERE id_reporte = ?
+            ");
+            $stmt->execute([$txtIDMascota, $txtIDTipoReporte, $txtDescripcion, $txtUbicacion, $txtIDEstadoReporte, $txtIDReporte]);
+        }
+        header("Location: mascotas.php");
+        exit;
+    case "Seleccionar":
+        $stmt = $conexion->prepare("SELECT * FROM reportes WHERE id_reporte = ?");
+        $stmt->execute([$txtIDReporte]);
+        $r = $stmt->fetch(PDO::FETCH_ASSOC);
+        if($r){
+            $txtIDReporte = $r['id_reporte'];
+            $txtIDMascota = $r['id_mascota'];
+            $txtIDTipoReporte = $r['id_tipo_reporte'];
+            $txtDescripcion = $r['descripcion'];
+            $txtUbicacion = $r['ubicacion'];
+            $txtIDEstadoReporte = $r['id_estado_reporte'];
+        }
+        break;
+    case "Borrar":
+        $stmt = $conexion->prepare("UPDATE reportes SET estado=0 WHERE id_reporte=?");
+        $stmt->execute([$txtIDReporte]);
+        header("Location: mascotas.php");
+        exit;
+    case "Cancelar":
+        header("Location: mascotas.php");
+        exit;
+}
+
+// ------ Listado reportes ------
+$listaReportes = $conexion->query("
+    SELECT r.*, 
+        m.nombre AS mascota,
+        CASE 
+            WHEN p.nombres IS NOT NULL THEN CONCAT(p.nombres, ' ', p.apellidos, ' (', p.numero_documento, ')')
+            WHEN o.organizacion IS NOT NULL THEN CONCAT(o.organizacion, ' (ORG)')
+            ELSE 'Sin dueño'
+        END AS duenio,
+        tr.tipo_reporte,
+        er.estado_reporte
+    FROM reportes r
+    LEFT JOIN mascotas m ON r.id_mascota = m.id_mascota
+    LEFT JOIN personas p ON m.id_persona = p.id_persona
+    LEFT JOIN organizacion o ON m.id_organizacion = o.id_organizacion
+    LEFT JOIN tipo_reporte tr ON r.id_tipo_reporte = tr.id_tipo_reporte
+    LEFT JOIN estado_reporte er ON r.id_estado_reporte = er.id_estado_reporte
+    WHERE r.estado=1
+    ORDER BY r.fecha_reporte DESC
+")->fetchAll(PDO::FETCH_ASSOC);
 
 include("../template/cabecera.php");
 ?>
 
-<div class="container">
-    <h1>Gestión de Mascotas</h1>
-    <!-- FORMULARIO DE MASCOTAS -->
+<div class="container mt-4">
+    <h2><?= $accion == "Seleccionar" ? "Editar" : "Nueva" ?> Mascota</h2>
     <form method="post" enctype="multipart/form-data" autocomplete="off">
         <input type="hidden" name="txtID" value="<?= htmlspecialchars($txtID) ?>">
         <div class="mb-3">
@@ -170,7 +373,7 @@ include("../template/cabecera.php");
             <input type="file" name="archivo" id="archivo" class="form-control" accept="image/*" />
             <?php if (!empty($txtFotoUrl) && $txtFotoUrl !== 'imagen.jpg'): ?>
                 <div class="mt-2">
-                    <img src="../../img/<?= htmlspecialchars($txtFotoUrl) ?>" alt="Foto Mascota" style="max-width: 150px; max-height: 150px;" />
+                    <img src="../img/<?= htmlspecialchars($txtFotoUrl) ?>" alt="Foto Mascota" style="max-width: 150px; max-height: 150px;" />
                 </div>
                 <input type="hidden" name="txtFotoUrl" value="<?= htmlspecialchars($txtFotoUrl) ?>" />
             <?php else: ?>
@@ -178,128 +381,180 @@ include("../template/cabecera.php");
             <?php endif; ?>
         </div>
         <div class="mb-3">
-            <button type="submit" name="accion" value="Agregar" <?= $accion === 'Seleccionar' ? 'disabled' : '' ?> class="btn btn-success">Agregar</button>
-            <button type="submit" name="accion" value="Modificar" <?= $accion !== 'Seleccionar' ? 'disabled' : '' ?> class="btn btn-warning">Modificar</button>
-            <button type="submit" name="accion" value="Cancelar" <?= $accion !== 'Seleccionar' ? 'disabled' : '' ?> class="btn btn-info">Cancelar</button>
+            <button type="submit" name="accion" value="<?= $accion == 'Seleccionar' ? 'Modificar' : 'Agregar' ?>" class="btn btn-<?= $accion == 'Seleccionar' ? 'warning' : 'success' ?>">
+                <?= $accion == 'Seleccionar' ? 'Modificar' : 'Agregar' ?> Mascota
+            </button>
+            <?php if($accion == 'Seleccionar'): ?>
+            <button type="submit" name="accion" value="Cancelar" class="btn btn-info">Cancelar</button>
+            <?php endif; ?>
         </div>
     </form>
+    <div class="table-responsive mt-4">
+        <h3>Listado de Mascotas</h3>
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Peso</th>
+                    <th>Dueño</th>
+                    <th>Especie</th>
+                    <th>Raza</th>
+                    <th>Sexo</th>
+                    <th>Color</th>
+                    <th>Tamaño</th>
+                    <th>Fecha Nacimiento</th>
+                    <th>Esterilizado</th>
+                    <th>Microchip</th>
+                    <th>Foto</th>
+                    <th>Fecha Registro</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($listaMascotasFull as $m) : ?>
+                    <tr>
+                        <td><?= $m['id_mascota'] ?></td>
+                        <td><?= htmlspecialchars($m['nombre']) ?></td>
+                        <td><?= htmlspecialchars($m['peso']) ?></td>
+                        <td>
+                            <?php
+                            if ($m['id_persona']) {
+                                echo htmlspecialchars($m['nombre_persona']) . ' (' . $m['numero_documento'] . ')';
+                            } elseif ($m['id_organizacion']) {
+                                echo htmlspecialchars($m['organizacion']);
+                            } else {
+                                echo 'Sin dueño';
+                            }
+                            ?>
+                        </td>
+                        <td><?= htmlspecialchars($m['tipo_especie']) ?></td>
+                        <td><?= htmlspecialchars($m['tipo_raza']) ?></td>
+                        <td><?= htmlspecialchars($m['tipo_sexo']) ?></td>
+                        <td><?= htmlspecialchars($m['color']) ?></td>
+                        <td><?= htmlspecialchars($m['tamano']) ?></td>
+                        <td><?= htmlspecialchars($m['fecha_nacimiento']) ?></td>
+                        <td><?= is_null($m['esterilizado']) ? 'Sin info' : ($m['esterilizado'] ? 'Sí' : 'No') ?></td>
+                        <td><?= htmlspecialchars($m['microchip_codigo']) ?></td>
+                        <td>
+                            <?php if ($m['foto_url'] && $m['foto_url'] !== 'imagen.jpg') : ?>
+                                <img src="../img/<?= htmlspecialchars($m['foto_url']) ?>" alt="Foto" style="max-width: 100px; max-height: 100px;" />
+                            <?php else : ?>
+                                Sin foto
+                            <?php endif; ?>
+                        </td>
+                        <td><?= htmlspecialchars($m['fecha_registro']) ?></td>
+                        <td>
+                            <form method="post" style="display: inline-block;">
+                                <input type="hidden" name="txtID" value="<?= $m['id_mascota'] ?>" />
+                                <button type="submit" name="accion" value="Seleccionar" class="btn btn-info btn-sm">Editar</button>
+                            </form>
+                            <form method="post" style="display: inline-block;">
+                                <input type="hidden" name="txtID" value="<?= $m['id_mascota'] ?>" />
+                                <button type="submit" name="accion" value="Borrar" onclick="return confirm('¿Está seguro?')" class="btn btn-danger btn-sm">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<!-- FORMULARIO PARA GENERAR REPORTES -->
 <div class="container mt-4">
-    <h2>Generar Reporte de Mascota</h2>
-    <form method="post" action="reporte_mascota.php">
+    <h2><?= $accionReporte == "Seleccionar" ? "Editar" : "Nuevo" ?> Reporte</h2>
+    <form method="post" autocomplete="off">
+        <input type="hidden" name="txtIDReporte" value="<?= htmlspecialchars($txtIDReporte) ?>">
         <div class="mb-3">
-            <label for="id_mascota" class="form-label">Mascota</label>
-            <select name="id_mascota" id="id_mascota" class="form-select" required>
+            <label for="txtIDMascota" class="form-label">Mascota</label>
+            <select name="txtIDMascota" id="txtIDMascota" class="form-select" required>
                 <option value="">Seleccione</option>
-                <?php foreach ($listaMascotas as $m) : ?>
-                    <option value="<?= $m['id_mascota'] ?>">
-                        <?= htmlspecialchars($m['nombre']) ?> - 
-                        <?php
-                        if ($m['id_persona']) {
-                            echo htmlspecialchars($m['nombre_persona']) . ' (' . $m['numero_documento'] . ')';
-                        } elseif ($m['id_organizacion']) {
-                            echo htmlspecialchars($m['organizacion']);
-                        } else {
-                            echo 'Sin dueño';
-                        }
-                        ?>
+                <?php foreach ($selectMascotas as $m): ?>
+                    <option value="<?= $m['id_mascota'] ?>" <?= $m['id_mascota']==$txtIDMascota ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($m['nombre']) ?> - <?= htmlspecialchars($m['duenio']) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         </div>
         <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción del reporte</label>
-            <textarea name="descripcion" id="descripcion" class="form-control" maxlength="300" required></textarea>
-        </div>
-        <div class="mb-3">
-            <label for="ubicacion" class="form-label">Ubicación</label>
-            <input type="text" name="ubicacion" id="ubicacion" class="form-control" maxlength="255" required>
-        </div>
-        <div class="mb-3">
-            <label for="id_tipo_reporte" class="form-label">Tipo de reporte</label>
-            <select name="id_tipo_reporte" id="id_tipo_reporte" class="form-select" required>
+            <label for="txtIDTipoReporte" class="form-label">Tipo de reporte</label>
+            <select name="txtIDTipoReporte" id="txtIDTipoReporte" class="form-select" required>
                 <option value="">Seleccione</option>
                 <?php foreach ($listaTiposReporte as $tr): ?>
-                    <option value="<?= $tr['id_tipo_reporte'] ?>"><?= htmlspecialchars($tr['tipo_reporte']) ?></option>
+                    <option value="<?= $tr['id_tipo_reporte'] ?>" <?= $tr['id_tipo_reporte']==$txtIDTipoReporte ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($tr['tipo_reporte']) ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </div>
-        <button type="submit" class="btn btn-primary">Generar Reporte</button>
+        <div class="mb-3">
+            <label for="txtDescripcion" class="form-label">Descripción</label>
+            <textarea name="txtDescripcion" id="txtDescripcion" class="form-control" maxlength="300" required><?= htmlspecialchars($txtDescripcion) ?></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="txtUbicacion" class="form-label">Ubicación</label>
+            <input type="text" name="txtUbicacion" id="txtUbicacion" class="form-control" maxlength="255" value="<?= htmlspecialchars($txtUbicacion) ?>" required>
+        </div>
+        <div class="mb-3">
+            <label for="txtIDEstadoReporte" class="form-label">Estado del reporte</label>
+            <select name="txtIDEstadoReporte" id="txtIDEstadoReporte" class="form-select" required>
+                <option value="">Seleccione</option>
+                <?php foreach ($listaEstadosReporte as $er): ?>
+                    <option value="<?= $er['id_estado_reporte'] ?>" <?= $er['id_estado_reporte']==$txtIDEstadoReporte ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($er['estado_reporte']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <button type="submit" name="accionReporte" value="<?= $accionReporte=='Seleccionar' ? 'Modificar':'Agregar' ?>" class="btn btn-<?= $accionReporte=='Seleccionar' ? 'warning':'success' ?>">
+            <?= $accionReporte=='Seleccionar' ? 'Modificar':'Agregar' ?> Reporte
+        </button>
+        <?php if($accionReporte=='Seleccionar'): ?>
+            <button type="submit" name="accionReporte" value="Cancelar" class="btn btn-info">Cancelar</button>
+        <?php endif; ?>
     </form>
-</div>
-
-<hr />
-
-<div class="table-responsive">
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Nombre</th>
-                <th>Peso</th>
-                <th>Dueño</th>
-                <th>Especie</th>
-                <th>Raza</th>
-                <th>Sexo</th>
-                <th>Color</th>
-                <th>Tamaño</th>
-                <th>Fecha Nacimiento</th>
-                <th>Esterilizado</th>
-                <th>Microchip</th>
-                <th>Foto</th>
-                <th>Fecha Registro</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($listaMascotas as $m) : ?>
+    <div class="table-responsive mt-4">
+        <h3>Reportes de Mascotas</h3>
+        <table class="table table-striped table-bordered">
+            <thead class="table-dark">
                 <tr>
-                    <td><?= $m['id_mascota'] ?></td>
-                    <td><?= htmlspecialchars($m['nombre']) ?></td>
-                    <td><?= htmlspecialchars($m['peso']) ?></td>
+                    <th>ID</th>
+                    <th>Mascota</th>
+                    <th>Dueño</th>
+                    <th>Tipo</th>
+                    <th>Descripción</th>
+                    <th>Ubicación</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($listaReportes as $r): ?>
+                <tr>
+                    <td><?= $r['id_reporte'] ?></td>
+                    <td><?= htmlspecialchars($r['mascota']) ?></td>
+                    <td><?= htmlspecialchars($r['duenio']) ?></td>
+                    <td><?= htmlspecialchars($r['tipo_reporte']) ?></td>
+                    <td><?= htmlspecialchars($r['descripcion']) ?></td>
+                    <td><?= htmlspecialchars($r['ubicacion']) ?></td>
+                    <td><?= htmlspecialchars($r['estado_reporte']) ?></td>
+                    <td><?= htmlspecialchars($r['fecha_reporte']) ?></td>
                     <td>
-                        <?php
-                        if ($m['id_persona']) {
-                            echo htmlspecialchars($m['nombre_persona']) . ' (' . $m['numero_documento'] . ')';
-                        } elseif ($m['id_organizacion']) {
-                            echo htmlspecialchars($m['organizacion']);
-                        } else {
-                            echo 'Sin dueño';
-                        }
-                        ?>
-                    </td>
-                    <td><?= htmlspecialchars($m['tipo_especie']) ?></td>
-                    <td><?= htmlspecialchars($m['tipo_raza']) ?></td>
-                    <td><?= htmlspecialchars($m['tipo_sexo']) ?></td>
-                    <td><?= htmlspecialchars($m['color']) ?></td>
-                    <td><?= htmlspecialchars($m['tamano']) ?></td>
-                    <td><?= htmlspecialchars($m['fecha_nacimiento']) ?></td>
-                    <td><?= is_null($m['esterilizado']) ? 'Sin info' : ($m['esterilizado'] ? 'Sí' : 'No') ?></td>
-                    <td><?= htmlspecialchars($m['microchip_codigo']) ?></td>
-                    <td>
-                        <?php if ($m['foto_url'] && $m['foto_url'] !== 'imagen.jpg') : ?>
-                            <img src="../../img/<?= htmlspecialchars($m['foto_url']) ?>" alt="Foto" style="max-width: 100px; max-height: 100px;" />
-                        <?php else : ?>
-                            Sin foto
-                        <?php endif; ?>
-                    </td>
-                    <td><?= htmlspecialchars($m['fecha_registro']) ?></td>
-                    <td>
-                        <form method="post" style="display: inline-block;">
-                            <input type="hidden" name="txtID" value="<?= $m['id_mascota'] ?>" />
-                            <button type="submit" name="accion" value="Seleccionar" class="btn btn-info btn-sm">Editar</button>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="txtIDReporte" value="<?= $r['id_reporte'] ?>">
+                            <button type="submit" name="accionReporte" value="Seleccionar" class="btn btn-info btn-sm">Editar</button>
                         </form>
-                        <form method="post" style="display: inline-block;">
-                            <input type="hidden" name="txtID" value="<?= $m['id_mascota'] ?>" />
-                            <button type="submit" name="accion" value="Borrar" onclick="return confirm('¿Está seguro?')" class="btn btn-danger btn-sm">Eliminar</button>
+                        <form method="post" style="display:inline;">
+                            <input type="hidden" name="txtIDReporte" value="<?= $r['id_reporte'] ?>">
+                            <button type="submit" name="accionReporte" value="Borrar" class="btn btn-danger btn-sm" onclick="return confirm('¿Desea eliminar este reporte?')">Eliminar</button>
                         </form>
                     </td>
                 </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
@@ -318,10 +573,8 @@ document.addEventListener("DOMContentLoaded", function () {
             contenedorOrganizacion.style.display = "block";
         }
     }
-
     radioPersona.addEventListener("change", toggleOwnerFields);
     radioOrganizacion.addEventListener("change", toggleOwnerFields);
-
     toggleOwnerFields();
 });
 </script>

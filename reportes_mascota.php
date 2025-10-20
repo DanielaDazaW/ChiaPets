@@ -2,15 +2,22 @@
 include("template/cabecera.php");
 include("administrador/config/bd.php");
 
-// SEGURIDAD: Solo usuario logueado
+// -- SEGURIDAD: Solo usuario logueado
 $idPersonaSesion = $_SESSION['usuario_id_persona'] ?? null;
 if (!$idPersonaSesion) {
     header("Location: ../login.php");
     exit();
 }
 
-// Listas para selects en el reporte
-$listaTiposReporte = $conexion->query("SELECT id_tipo_reporte, tipo_reporte FROM tipo_reporte WHERE 1")->fetchAll(PDO::FETCH_ASSOC);
+// ----- VARIABLES REPORTES -----
+$txtIDReporte = $_POST['txtIDReporte'] ?? "";
+$txtIdMascota = $_POST['txtIdMascota'] ?? "";
+$txtIdTipoReporte = $_POST['txtIdTipoReporte'] ?? "";
+$txtDescripcion = $_POST['txtDescripcion'] ?? "";
+$txtUbicacion = $_POST['txtUbicacion'] ?? "";
+$accionReporte = $_POST['accionReporte'] ?? "";
+
+// -- Listas para selects (solo de usuario)
 $listaMascotasUsuario = $conexion->query("
     SELECT id_mascota, nombre 
     FROM mascotas 
@@ -18,27 +25,22 @@ $listaMascotasUsuario = $conexion->query("
     ORDER BY nombre
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-// ----- CRUD REPORTE -----
-$idReporte = $_POST['id_reporte'] ?? '';
-$idMascota = $_POST['id_mascota'] ?? '';
-$idTipoReporte = $_POST['id_tipo_reporte'] ?? '';
-$descripcion = $_POST['descripcion'] ?? '';
-$ubicacion = $_POST['ubicacion'] ?? '';
-$accionReporte = $_POST['accionReporte'] ?? "";
+$listaTiposReporte = $conexion->query("SELECT id_tipo_reporte, tipo_reporte FROM tipo_reporte WHERE 1")->fetchAll(PDO::FETCH_ASSOC);
 
+// --- CRUD REPORTES ---
 switch ($accionReporte) {
     case 'Agregar':
         // Solo puede crear reporte de mascota propia
         $stmtMascota = $conexion->prepare("SELECT id_mascota FROM mascotas WHERE id_mascota=? AND id_persona=? AND estado=1");
-        $stmtMascota->execute([$idMascota, $idPersonaSesion]);
+        $stmtMascota->execute([$txtIdMascota, $idPersonaSesion]);
         if ($stmtMascota->fetch()) {
             $fechaReporte = date('Y-m-d');
-            $idEstadoReporte = 1;
-            $estado = 1;
+            $idEstadoReporte = 3; // SIEMPRE 3 (automático)
+            $estado = 1;          // SIEMPRE 1 (automático)
             $stmt = $conexion->prepare("INSERT INTO reportes (id_mascota, id_tipo_reporte, descripcion, ubicacion, id_estado_reporte, fecha_reporte, estado) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$idMascota, $idTipoReporte, $descripcion, $ubicacion, $idEstadoReporte, $fechaReporte, $estado]);
+            $stmt->execute([$txtIdMascota, $txtIdTipoReporte, $txtDescripcion, $txtUbicacion, $idEstadoReporte, $fechaReporte, $estado]);
         }
-        header("Location: reporte_mascota.php?add=ok");
+        header("Location: reportes_mascota.php");
         exit;
     case 'Modificar':
         // Solo puede modificar reporte si es de mascota propia
@@ -48,13 +50,13 @@ switch ($accionReporte) {
                 SELECT id_mascota FROM mascotas WHERE id_persona=:persona AND estado=1
             )
         ");
-        $stmt->bindParam(':tipo', $idTipoReporte);
-        $stmt->bindParam(':desc', $descripcion);
-        $stmt->bindParam(':ubi', $ubicacion);
-        $stmt->bindParam(':id', $idReporte);
+        $stmt->bindParam(':tipo', $txtIdTipoReporte);
+        $stmt->bindParam(':desc', $txtDescripcion);
+        $stmt->bindParam(':ubi', $txtUbicacion);
+        $stmt->bindParam(':id', $txtIDReporte);
         $stmt->bindParam(':persona', $idPersonaSesion);
         $stmt->execute();
-        header("Location: reporte_mascota.php?mod=ok");
+        header("Location: reportes_mascota.php");
         exit;
     case 'Seleccionar':
         // Solo puede seleccionar reporte propio para editar
@@ -63,15 +65,15 @@ switch ($accionReporte) {
                 SELECT id_mascota FROM mascotas WHERE id_persona=:persona AND estado=1
             )
         ");
-        $stmt->bindParam(':id', $idReporte);
+        $stmt->bindParam(':id', $txtIDReporte);
         $stmt->bindParam(':persona', $idPersonaSesion);
         $stmt->execute();
         $reporteSel = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($reporteSel) {
-            $idMascota = $reporteSel['id_mascota'];
-            $idTipoReporte = $reporteSel['id_tipo_reporte'];
-            $descripcion = $reporteSel['descripcion'];
-            $ubicacion = $reporteSel['ubicacion'];
+            $txtIdMascota = $reporteSel['id_mascota'];
+            $txtIdTipoReporte = $reporteSel['id_tipo_reporte'];
+            $txtDescripcion = $reporteSel['descripcion'];
+            $txtUbicacion = $reporteSel['ubicacion'];
         }
         break;
     case 'Borrar':
@@ -81,16 +83,19 @@ switch ($accionReporte) {
                 SELECT id_mascota FROM mascotas WHERE id_persona=:persona
             )
         ");
-        $stmt->bindParam(':id', $idReporte);
+        $stmt->bindParam(':id', $txtIDReporte);
         $stmt->bindParam(':persona', $idPersonaSesion);
         $stmt->execute();
-        header("Location: reporte_mascota.php?del=ok");
+        header("Location: reportes_mascota.php");
+        exit;
+    case 'Cancelar':
+        header("Location: reportes_mascota.php");
         exit;
 }
 
-// Listar solo reportes de mascotas propias
+// --- LISTADO DE REPORTES DEL USUARIO ---
 $stmt = $conexion->prepare("
-    SELECT r.*, m.nombre AS mascota_nombre, tr.tipo_reporte AS tipo
+    SELECT r.*, m.nombre AS mascota_nombre, tr.tipo_reporte AS tipo, r.descripcion, r.ubicacion, r.fecha_reporte
     FROM reportes r
     LEFT JOIN mascotas m ON r.id_mascota = m.id_mascota
     LEFT JOIN tipo_reporte tr ON r.id_tipo_reporte = tr.id_tipo_reporte
@@ -99,58 +104,52 @@ $stmt = $conexion->prepare("
 ");
 $stmt->execute([$idPersonaSesion]);
 $listaReportes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
+
 <div class="container">
-    <!-- TEXTO EXPLICATIVO -->
-    <div class="alert alert-info mt-4 mb-3">
-        <strong>¿Para qué sirven los reportes?</strong><br>
-        Esta página te permite registrar y consultar reportes relacionados con tus mascotas. 
-        Aquí podrás crear registros sobre situaciones como extravíos, accidentes, adopciones, cambios de ubicación o cualquier otro evento relevante. 
-        Cada reporte queda asociado a tu mascota y te ayudará a llevar un historial organizado y compartir la información cuando lo necesites.
-    </div>
-    <h2>Generar/Editar Reporte de Mascota</h2>
-    <form method="post">
-        <input type="hidden" name="id_reporte" value="<?= htmlspecialchars($idReporte) ?>">
+    <h1>Reportes de mis Mascotas</h1>
+    <form method="post" autocomplete="off">
+        <input type="hidden" name="txtIDReporte" value="<?= htmlspecialchars($txtIDReporte) ?>">
         <div class="mb-3">
-            <label for="id_mascota" class="form-label">Mascota</label>
-            <select name="id_mascota" id="id_mascota" class="form-select" required <?= $accionReporte == 'Seleccionar' ? 'disabled' : '' ?>>
+            <label for="txtIdMascota" class="form-label">Mascota</label>
+            <select name="txtIdMascota" id="txtIdMascota" class="form-select" required <?= $accionReporte == 'Seleccionar' ? 'disabled' : '' ?>>
                 <option value="">Seleccione</option>
                 <?php foreach ($listaMascotasUsuario as $mascota): ?>
-                    <option value="<?= $mascota['id_mascota'] ?>" <?= $mascota['id_mascota'] == $idMascota ? 'selected' : '' ?>>
+                    <option value="<?= $mascota['id_mascota'] ?>" <?= $mascota['id_mascota'] == $txtIdMascota ? 'selected' : '' ?>>
                         <?= htmlspecialchars($mascota['nombre']) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         </div>
         <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción del reporte</label>
-            <textarea name="descripcion" id="descripcion" class="form-control" maxlength="300" required><?= htmlspecialchars($descripcion) ?></textarea>
+            <label for="txtDescripcion" class="form-label">Descripción del reporte</label>
+            <textarea name="txtDescripcion" id="txtDescripcion" class="form-control" maxlength="300" required><?= htmlspecialchars($txtDescripcion) ?></textarea>
         </div>
         <div class="mb-3">
-            <label for="ubicacion" class="form-label">Ubicación</label>
-            <input type="text" name="ubicacion" id="ubicacion" class="form-control" maxlength="255" value="<?= htmlspecialchars($ubicacion) ?>" required>
+            <label for="txtUbicacion" class="form-label">Ubicación</label>
+            <input type="text" name="txtUbicacion" id="txtUbicacion" class="form-control" maxlength="255" value="<?= htmlspecialchars($txtUbicacion) ?>" required>
         </div>
         <div class="mb-3">
-            <label for="id_tipo_reporte" class="form-label">Tipo de reporte</label>
-            <select name="id_tipo_reporte" id="id_tipo_reporte" class="form-select" required>
+            <label for="txtIdTipoReporte" class="form-label">Tipo de reporte</label>
+            <select name="txtIdTipoReporte" id="txtIdTipoReporte" class="form-select" required>
                 <option value="">Seleccione</option>
                 <?php foreach ($listaTiposReporte as $tr): ?>
-                    <option value="<?= $tr['id_tipo_reporte'] ?>" <?= $tr['id_tipo_reporte'] == $idTipoReporte ? 'selected' : '' ?>>
+                    <option value="<?= $tr['id_tipo_reporte'] ?>" <?= $tr['id_tipo_reporte'] == $txtIdTipoReporte ? 'selected' : '' ?>>
                         <?= htmlspecialchars($tr['tipo_reporte']) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         </div>
-        <button type="submit" name="accionReporte" value="<?= $accionReporte == 'Seleccionar' ? 'Modificar' : 'Agregar' ?>" class="btn btn-primary">
-            <?= $accionReporte == 'Seleccionar' ? 'Modificar' : 'Agregar' ?> Reporte
-        </button>
-        <?php if ($accionReporte == 'Seleccionar'): ?>
+        <div>
+            <button type="submit" name="accionReporte" value="<?= $accionReporte == 'Seleccionar' ? 'Modificar' : 'Agregar' ?>" class="btn btn-<?= $accionReporte == 'Seleccionar' ? 'warning' : 'success' ?>">
+                <?= $accionReporte == 'Seleccionar' ? 'Modificar' : 'Agregar' ?> Reporte
+            </button>
+            <?php if ($accionReporte == 'Seleccionar'): ?>
             <button type="submit" name="accionReporte" value="Cancelar" class="btn btn-info">Cancelar</button>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
     </form>
     <hr>
-    <h3>Reportes de tus mascotas</h3>
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -174,11 +173,11 @@ $listaReportes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <td><?= htmlspecialchars($r['fecha_reporte']) ?></td>
                 <td>
                     <form method="post" style="display:inline;">
-                        <input type="hidden" name="id_reporte" value="<?= $r['id_reporte'] ?>">
+                        <input type="hidden" name="txtIDReporte" value="<?= $r['id_reporte'] ?>">
                         <button type="submit" name="accionReporte" value="Seleccionar" class="btn btn-info btn-sm">Editar</button>
                     </form>
                     <form method="post" style="display:inline;">
-                        <input type="hidden" name="id_reporte" value="<?= $r['id_reporte'] ?>">
+                        <input type="hidden" name="txtIDReporte" value="<?= $r['id_reporte'] ?>">
                         <button type="submit" name="accionReporte" value="Borrar" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro?')">Eliminar</button>
                     </form>
                 </td>
@@ -187,6 +186,4 @@ $listaReportes = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </tbody>
     </table>
 </div>
-
-
 <?php include("template/pie.php"); ?>

@@ -49,7 +49,8 @@ $totalVacunas = $rowVacunas['total'];
             <h1 class="display-4 mb-0 text-center">Bienvenido, Administrador</h1>
             <p class="lead text-center">Desde aquí puedes gestionar todos los aspectos de CHIAPETS</p>
                     <div class="text-center mt-3">
-                <a href="administrador/seccion/dashboard.php" class="btn btn-lg btn-outline-primary" style="font-size:1.3rem;">
+                        </h1>
+                <a href="seccion/dashboard.php" class="btn btn-lg btn-outline-primary" style="font-size:1.3rem;">
                     Ver Dashboard de Estadísticas
                 </a>
             </div>
