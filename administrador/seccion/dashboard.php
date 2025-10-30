@@ -94,10 +94,16 @@ $personasMasMascotas = $conexion->query("
     LIMIT 5
 ")->fetchAll(PDO::FETCH_ASSOC);
 
+
 ?>
 <!DOCTYPE html>
 <html>
-
+<style>
+canvas {
+  width: 100% !important;
+  height: 300px !important;
+}
+</style>
 <body>
 <div class="container mt-4">
     <h1>Dashboard de Estadísticas</h1>
@@ -138,31 +144,31 @@ $personasMasMascotas = $conexion->query("
     <!-- Gráficas -->
     <div class="row">
         <div class="col-md-6">
-            nvas id="d="mascotasEspecie"></canvas>
+           <canvas id="mascotasEspecie"></canvas>
         </div>
         <div class="col-md-6">
-            nvas id="d="esterilizadasTorta"></canvas>
-        </div>
-    </div>
-    <div class="row mt-4">
-        <div class="col-md-6">
-            nvas id="d="mascotasRaza"></canvas>
-        </div>
-        <div class="col-md-6">
-            nvas id="d="mascotasTamano"></canvas>
+            <canvas id="esterilizadasTorta"></canvas>
         </div>
     </div>
     <div class="row mt-4">
         <div class="col-md-6">
-            nvas id="d="reportesTipo"></canvas>
+            <canvas id="mascotasRaza"></canvas>
         </div>
         <div class="col-md-6">
-            nvas id="d="vacunasTipo"></canvas>
+            <canvas id="mascotasTamano"></canvas>
         </div>
     </div>
     <div class="row mt-4">
         <div class="col-md-6">
-            nvas id="desparasitacionesProductocto"></canvas>
+            <canvas id="reportesTipo"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="vacunasTipo"></canvas>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <canvas id="desparasitacionesProductocto"></canvas>
         </div>
     </div>
     <!-- Tablas resumen -->
@@ -201,6 +207,7 @@ $personasMasMascotas = $conexion->query("
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     // Mascotas por especie (Barras)
     const mascotasEspecie = new Chart(document.getElementById('mascotasEspecie'), {
@@ -285,7 +292,9 @@ $personasMasMascotas = $conexion->query("
             }]
         }
     });
+
 </script>
+
 </body>
 </html>
 <?php include("../template/pie.php"); ?>

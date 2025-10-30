@@ -128,12 +128,20 @@ unset($_SESSION['mensaje_olvido']);
     <?php endif; ?>
     <form method="post" action="validar_dato.php" autocomplete="off">
         <div class="form-group">
+            <label for="correo">Correo Electrónico</label>
+            <input type="email" id="correo" name="correo" required />
+        </div>
+        <div class="form-group">
             <label for="numero_documento">Número de Documento</label>
             <input type="text" id="numero_documento" name="numero_documento" required />
         </div>
         <div class="form-group">
-            <label for="usuario">Usuario (opcional)</label>
-            <input type="text" id="usuario" name="usuario" />
+            <label for="fecha_nacimiento">Fecha de Nacimiento</label>
+            <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required />
+        </div>
+        <div class="form-group">
+            <label for="telefono">Número Telefónico</label>
+            <input type="text" id="telefono" name="telefono" required />
         </div>
         <button type="submit" class="login-btn">Validar</button>
     </form>

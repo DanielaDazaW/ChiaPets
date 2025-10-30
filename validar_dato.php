@@ -1,60 +1,71 @@
 <?php
-// validar_dato.php
 session_start();
-include("administrador/config/bd.php"); // $conexion (PDO)
+include("administrador/config/bd.php");
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: olvido_contrasena.php'); exit;
-}
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $correo = trim($_POST['correo']);
+    $numero_documento = trim($_POST['numero_documento']);
+    $fecha_nacimiento = trim($_POST['fecha_nacimiento']);
+    $telefono = trim($_POST['telefono']);
 
-$numero_documento = isset($_POST['numero_documento']) ? trim($_POST['numero_documento']) : '';
-$usuario_input = isset($_POST['usuario']) ? trim($_POST['usuario']) : '';
+    $query = "
+        SELECT u.id_persona, p.nombres, p.apellidos, p.correo 
+        FROM personas p
+        INNER JOIN usuario u ON p.id_persona = u.id_persona
+        WHERE p.correo = :correo
+          AND p.numero_documento = :numero_documento
+          AND p.fecha_nacimiento = :fecha_nacimiento
+          AND p.telefono = :telefono
+          AND p.estado = 1
+        LIMIT 1
+    ";
 
-// simple rate-limit por sesión para este flujo (mejorar con DB o cache en producción)
-if (!isset($_SESSION['olvido_intentos'])) { $_SESSION['olvido_intentos'] = 0; }
-if ($_SESSION['olvido_intentos'] >= 5) {
-    $_SESSION['mensaje_olvido'] = 'Demasiados intentos. Intente más tarde.'; header('Location: olvido_contrasena.php'); exit;
-}
+    $stmt = $conexion->prepare($query);
+    $stmt->bindParam(':correo', $correo);
+    $stmt->bindParam(':numero_documento', $numero_documento);
+    $stmt->bindParam(':fecha_nacimiento', $fecha_nacimiento);
+    $stmt->bindParam(':telefono', $telefono);
+    $stmt->execute();
 
-if (empty($numero_documento)) {
-    $_SESSION['mensaje_olvido'] = 'Ingrese número de documento.'; header('Location: olvido_contrasena.php'); exit;
-}
+    if ($stmt->rowCount() == 1) {
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Guardar id_persona en sesión para actualizar contraseña
+        $_SESSION['id_persona'] = $user['id_persona'];
+        ?>
 
-// buscar persona activa
-$stmt = $conexion->prepare("SELECT p.id_persona, u.id_usuario FROM personas p LEFT JOIN usuario u ON u.id_persona = p.id_persona WHERE p.numero_documento = :numero_documento AND p.estado = 1");
-$stmt->execute([':numero_documento' => $numero_documento]);
-$persona = $stmt->fetch(PDO::FETCH_ASSOC);
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <title>Actualizar Contraseña</title>
+            <style>
+                body { background: #d4f763; font-family: Arial, sans-serif; padding: 2rem; }
+                .container { background: white; max-width: 400px; margin: 0 auto; padding: 1.5rem; border-radius: 8px; text-align: center; }
+                input { margin-bottom: 1rem; padding: 0.5rem; width: 100%; font-size: 1rem; }
+                button { background-color: #78bc15; color: white; font-weight: bold; padding: 0.7rem; border: none; border-radius: 5px; cursor: pointer; width: 100%; }
+                button:hover { background-color: #5e921a; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h2>Actualizar Contraseña para <?php echo htmlspecialchars($user['nombres'] . ' ' . $user['apellidos']); ?></h2>
+                <form method="post" action="actualizar_contrasena.php" autocomplete="off">
+                    <input type="password" name="contrasena" placeholder="Nueva contraseña" required>
+                    <input type="password" name="contrasena2" placeholder="Confirmar nueva contraseña" required>
+                    <button type="submit">Actualizar Contraseña</button>
+                </form>
+            </div>
+        </body>
+        </html>
 
-if (!$persona) {
-    $_SESSION['olvido_intentos']++;
-    $_SESSION['mensaje_olvido'] = 'Datos no encontrados.'; header('Location: olvido_contrasena.php'); exit;
-}
-
-// Si se ingresó usuario, validar que coincida con id_persona (opcional)
-if (!empty($usuario_input)) {
-    // buscar coincidencia usuario - id_persona
-    $stmtU = $conexion->prepare("SELECT id_usuario FROM usuario WHERE id_persona = :id_persona LIMIT 1");
-    $stmtU->execute([':id_persona' => $persona['id_persona']]);
-    $u = $stmtU->fetch(PDO::FETCH_ASSOC);
-    if (!$u) {
-        $_SESSION['olvido_intentos']++;
-        $_SESSION['mensaje_olvido'] = 'Usuario no asociado al documento.'; header('Location: olvido_contrasena.php'); exit;
+        <?php
+    } else {
+        $_SESSION['mensaje_olvido'] = "Datos incorrectos o usuario no encontrado.";
+        header("Location: olvido_contrasena.php");
+        exit;
     }
+} else {
+    header("Location: olvido_contrasena.php");
+    exit;
 }
-
-// Crear token temporal y guardarlo en tabla password_resets (recomendado)
-$token = bin2hex(random_bytes(16)); // token en claro (no enviado por email aquí)
-$token_hash = password_hash($token, PASSWORD_DEFAULT);
-$expires_at = (new DateTime('+30 minutes'))->format('Y-m-d H:i:s');
-
-$stmtIns = $conexion->prepare("INSERT INTO password_resets (id_persona, token_hash, expires_at, attempts) VALUES (:id_persona, :token_hash, :expires_at, 0)");
-$stmtIns->execute([':id_persona' => $persona['id_persona'], ':token_hash' => $token_hash, ':expires_at' => $expires_at]);
-
-// Guardar identificadores en sesión para permitir cambio de contraseña sin correo
-$_SESSION['reset_id_persona'] = $persona['id_persona'];
-$_SESSION['reset_token_plain'] = $token; // temporal en sesión (no recomendable en prod si hay muchos usuarios concurrentes)
-$_SESSION['reset_bd_hash'] = $token_hash;
-$_SESSION['reset_expires_at'] = $expires_at;
-
-// Redirigir a formulario para nueva contraseña
-header('Location: nueva_contrasena.php'); exit;
+?>

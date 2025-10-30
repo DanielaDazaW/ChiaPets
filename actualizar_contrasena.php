@@ -1,55 +1,131 @@
 <?php
-// actualizar_contrasena.php
 session_start();
 include("administrador/config/bd.php");
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['reset_id_persona'])) {
-    $_SESSION['mensaje_olvido'] = 'Flujo inválido.'; header('Location: olvido_contrasena.php'); exit;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!isset($_SESSION['id_persona'])) {
+        header("Location: olvido_contrasena.php");
+        exit;
+    }
+    $id_persona = $_SESSION['id_persona'];
+    $contrasena = $_POST['contrasena'] ?? '';
+    $contrasena2 = $_POST['contrasena2'] ?? '';
+
+    if ($contrasena !== $contrasena2) {
+        $mensaje = "Las contraseñas no coinciden.";
+    } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $contrasena)) {
+        $mensaje = "La contraseña debe contener al menos 8 caracteres, letras mayúsculas, minúsculas y números.";
+    } else {
+        $hash = password_hash($contrasena, PASSWORD_DEFAULT);
+        $stmt = $conexion->prepare("UPDATE usuario SET contrasena = :contrasena WHERE id_persona = :id_persona");
+        $stmt->bindParam(':contrasena', $hash);
+        $stmt->bindParam(':id_persona', $id_persona);
+
+        if ($stmt->execute()) {
+            unset($_SESSION['id_persona']);
+            $exito = "Contraseña actualizada correctamente.";
+        } else {
+            $mensaje = "Error al actualizar la contraseña.";
+        }
+    }
+} else {
+    header("Location: olvido_contrasena.php");
+    exit;
 }
+?>
 
-$id_persona = $_SESSION['reset_id_persona'];
-$contrasena = $_POST['contrasena'] ?? '';
-$contrasena2 = $_POST['contrasena2'] ?? '';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Actualizar Contraseña</title>
+<style>
+    body {
+        background: linear-gradient(160deg, #e0ffc4 0%, #b9efa9 100%);
+        font-family: Arial, sans-serif;
+        min-height: 100vh;
+        margin: 0;
+        padding: 2rem;
+    }
+    .container {
+        max-width: 400px;
+        margin: 3rem auto;
+        background: #d4f763;
+        border-radius: 1rem;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        padding: 2rem;
+        text-align: center;
+    }
+    h2 {
+        color: #50770a;
+        margin-bottom: 1.5rem;
+    }
+    input[type="password"] {
+        width: 100%;
+        padding: 0.7rem;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #a9a9a9;
+        font-size: 1rem;
+    }
+    button {
+        background: #95e300;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 0.45rem;
+        padding: 0.85rem 0;
+        width: 100%;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: background 0.2s;
+    }
+    button:hover {
+        background: #78bc15;
+    }
+    .alert {
+        padding: 0.7rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+    .alert-error {
+        background: #fff3cd;
+        color: #856404;
+    }
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+    }
+    a.btn-link {
+        display: inline-block;
+        margin-top: 1rem;
+        color: #1da52b;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    a.btn-link:hover {
+        text-decoration: underline;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h2>Actualizar Contraseña</h2>
+    <?php if (!empty($mensaje)): ?>
+        <div class="alert alert-error"><?php echo $mensaje; ?></div>
+    <?php elseif (!empty($exito)): ?>
+        <div class="alert alert-success"><?php echo $exito; ?></div>
+        <a href="login.php" class="btn-link">Ir al inicio de sesión</a>
+    <?php endif; ?>
 
-if ($contrasena !== $contrasena2) {
-    $_SESSION['mensaje_nueva'] = 'Las contraseñas no coinciden.'; header('Location: nueva_contrasena.php'); exit;
-}
-
-if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $contrasena)) {
-    $_SESSION['mensaje_nueva'] = 'La contraseña debe tener mayúsculas, minúsculas, números y mínimo 8 caracteres.'; header('Location: nueva_contrasena.php'); exit;
-}
-
-// Verificar que token en sesión no haya expirado y exista en DB
-$now = (new DateTime())->format('Y-m-d H:i:s');
-$stmt = $conexion->prepare("SELECT id, token_hash, expires_at, attempts FROM password_resets WHERE id_persona = :id_persona ORDER BY id DESC LIMIT 1");
-$stmt->execute([':id_persona' => $id_persona]);
-$reset = $stmt->fetch(PDO::FETCH_ASSOC);
-
-if (!$reset) {
-    $_SESSION['mensaje_olvido'] = 'No hay solicitud de restablecimiento.'; header('Location: olvido_contrasena.php'); exit;
-}
-
-if ($reset['expires_at'] < $now) {
-    $_SESSION['mensaje_olvido'] = 'El token expiró. Inicie nuevamente.'; header('Location: olvido_contrasena.php'); exit;
-}
-
-// Comparar token de sesión con hash guardado
-$token_plain = $_SESSION['reset_token_plain'] ?? '';
-if (!password_verify($token_plain, $reset['token_hash'])) {
-    $_SESSION['mensaje_olvido'] = 'Token inválido.'; header('Location: olvido_contrasena.php'); exit;
-}
-
-// Actualizar contraseña en la tabla usuario (buscar usuario por id_persona)
-$hash = password_hash($contrasena, PASSWORD_DEFAULT);
-$stmtU = $conexion->prepare("UPDATE usuario SET contrasena = :contrasena WHERE id_persona = :id_persona");
-$stmtU->execute([':contrasena' => $hash, ':id_persona' => $id_persona]);
-
-// Invalidar el reset (borrar o marcar)
-$stmtDel = $conexion->prepare("DELETE FROM password_resets WHERE id = :id");
-$stmtDel->execute([':id' => $reset['id']]);
-
-// Limpiar sesión de restablecimiento
-unset($_SESSION['reset_id_persona'], $_SESSION['reset_token_plain'], $_SESSION['reset_bd_hash'], $_SESSION['reset_expires_at'], $_SESSION['olvido_intentos']);
-
-$_SESSION['mensaje_login'] = 'Contraseña actualizada con éxito. Puede iniciar sesión.';
-header('Location: login.php'); exit;
+    <?php if (empty($exito)): ?>
+    <form method="post" autocomplete="off">
+        <input type="password" name="contrasena" placeholder="Nueva contraseña" required>
+        <input type="password" name="contrasena2" placeholder="Confirmar nueva contraseña" required>
+        <button type="submit">Actualizar Contraseña</button>
+    </form>
+    <?php endif; ?>
+</div>
+</body>
+</html>
