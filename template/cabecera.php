@@ -50,6 +50,9 @@ if (!isset($_SESSION['usuario_tipo']) || !in_array($_SESSION['usuario_tipo'], [1
                 <li class="nav-item">
                     <a class="nav-link" href="actualizar_mi_informacion.php">Actualizar mi información</a>
                 </li>
+                                <li class="nav-item">
+                    <a class="nav-link" href="ayuda.php">Ayuda</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link" href="cerrar_sesion.php">Cerrar Sesion</a>
                 </li>
