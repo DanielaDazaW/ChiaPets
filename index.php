@@ -2,6 +2,11 @@
 include("template/cabecera.php");
 ?>
 
+<style>
+    body {
+        background-color: #c8ff61; /* Verde claro */
+    }
+</style>
 
 <!-- Contenedor del logo -->
 <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
