@@ -49,7 +49,6 @@ $totalVacunas = $rowVacunas['total'];
             <h1 class="display-4 mb-0 text-center">Bienvenido, Administrador</h1>
             <p class="lead text-center">Desde aquí puedes gestionar todos los aspectos de CHIAPETS</p>
                     <div class="text-center mt-3">
-                        </h1>
                 <a href="seccion/dashboard.php" class="btn btn-lg btn-outline-primary" style="font-size:1.3rem;">
                     Ver Dashboard de Estadísticas
                 </a>
@@ -110,12 +109,18 @@ $totalVacunas = $rowVacunas['total'];
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-center">
                     <small class="w-100 text-center">Total de vacunas aplicadas</small>
+                
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<hr style="margin: 60px auto 25px auto; max-width:990px; border-top:2px solid #222;">
+<div style="text-align:center;">
+    <h2 style="margin-bottom:18px;">Manual de Administrador</h2>
+    <iframe src="../img/AdmManual.pdf" width="80%" height="800" style="border:1px solid #ccc; border-radius:8px;" ></iframe>
+</div>
 
 
 <?php include('template/pie.php'); ?>

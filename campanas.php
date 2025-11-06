@@ -54,7 +54,7 @@ $stmt->execute();
 
 <!-- Logo centrado -->
 <div class="logo-container">
-    <img src="img/chiapet3.png" alt="Logo de la organización">
+   C alt="Logo de la organización">
 </div>
 
 <div class="container">
