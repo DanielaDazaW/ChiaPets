@@ -10,105 +10,116 @@ unset($_SESSION['mensaje_olvido']);
     <meta charset="utf-8">
     <title>Recuperar Contraseña</title>
     <style>
-    body {
-        background: linear-gradient(160deg, #e0ffc4 0%, #b9efa9 100%);
-        min-height: 100vh;
-        margin: 0;
-    }
-    .main-header {
-        width: 100%;
-        background: #d4f763;
-        padding: 2.3rem 0 2.1rem 0;
-        box-shadow: 0 4px 15px rgba(80,150,60,0.14);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 0;
-    }
-    .header-content {
-        text-align: center;
-    }
-    .header-logo {
-        width: 80px;
-        border-radius: 50%;
-        background: #d4f763;
-        margin-bottom: 7px;
-    }
-    .header-title {
-        font-size: 2.25rem;
-        font-weight: bold;
-        color: #50770a;
-        margin-bottom: 0.4rem;
-        letter-spacing: 1.2px;
-    }
-    .header-desc {
-        font-size: 1.1rem;
-        color: #3d570b;
-        margin-bottom: 0.3rem;
-    }
-    .login-container {
-        max-width: 360px;
-        margin: 4rem auto;
-        background: #d4f763;
-        border-radius: 1rem;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        padding: 2rem 1.5rem 1rem 1.5rem;
-        text-align: center;
-    }
-    .login-logo {
-        width: 100px;
-        height: 100px;
-        margin-bottom: 10px;
-        margin-top: -36px;
-        border-radius: 50%;
-        background-color: #d4f763;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .login-title {
-        font-size: 1.45rem;
-        font-weight: bold;
-        margin-bottom: 0.7rem;
-        color: #5e921a;
-    }
-    .form-group label {
-        font-weight: 500;
-        color: #5e921a;
-        text-align: left;
-        width: 100%;
-    }
-    .form-group input {
-        border-radius: 0.5rem;
-        border: 1px solid #a9a9a9;
-        padding: 0.7rem;
-        width: 100%;
-        margin-bottom: 18px;
-    }
-    .login-btn {
-        background: #95e300;
-        color: #fff;
-        font-weight: bold;
-        border: none;
-        border-radius: 0.45rem;
-        padding: 0.85rem 0;
-        width: 100%;
-        margin-bottom: 7px;
-        cursor: pointer;
-        font-size: 1.1rem;
-        transition: background 0.2s;
-    }
-    .login-btn:hover {
-        background: #78bc15;
-    }
-    .alert-warning {
-        background: #fffbe1;
-        color: #b59300;
-        border-radius: 0.5rem;
-        padding: 0.7rem;
-        margin-bottom: 1rem;
-    }
-    </style>
+body {
+    background: linear-gradient(160deg, #e0ffc4 0%, #b9efa9 100%);
+    min-height: 100vh;
+    margin: 0;
+}
+.main-header {
+    width: 100%;
+    background: #d4f763;
+    padding: 2.3rem 0 2.1rem 0;
+    box-shadow: 0 4px 15px rgba(80,150,60,0.14);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 0;
+}
+.header-content {
+    text-align: center;
+}
+.header-logo {
+    width: 80px;
+    border-radius: 50%;
+    background: #d4f763;
+    margin-bottom: 7px;
+}
+.header-title {
+    font-size: 2.25rem;
+    font-weight: bold;
+    color: #50770a;
+    margin-bottom: 0.4rem;
+    letter-spacing: 1.2px;
+}
+.header-desc {
+    font-size: 1.1rem;
+    color: #3d570b;
+    margin-bottom: 0.3rem;
+}
+.login-container {
+    max-width: 360px;
+    margin: 4rem auto;
+    background: #d4f763;
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    padding: 2rem 1.5rem 1rem 1.5rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.login-logo {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+    margin-top: -36px;
+    border-radius: 50%;
+    background-color: #d4f763;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login-title {
+    font-size: 1.45rem;
+    font-weight: bold;
+    margin-bottom: 0.7rem;
+    color: #5e921a;
+}
+.form-group {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 18px;
+}
+.form-group label {
+    font-weight: 500;
+    color: #5e921a;
+    width: 100%;
+    text-align: center;
+    display: block;
+}
+.form-group input {
+    border-radius: 0.5rem;
+    border: 1px solid #a9a9a9;
+    padding: 0.7rem;
+    width: 100%;
+    margin-bottom: 0;
+    text-align: center;
+}
+.login-btn {
+    background: #95e300;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 0.45rem;
+    padding: 0.85rem 0;
+    width: 100%;
+    margin-bottom: 7px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background 0.2s;
+}
+.login-btn:hover {
+    background: #78bc15;
+}
+.alert-warning {
+    background: #fffbe1;
+    color: #b59300;
+    border-radius: 0.5rem;
+    padding: 0.7rem;
+    margin-bottom: 1rem;
+}
+</style>
+
 </head>
 <body>
 <header class="main-header">

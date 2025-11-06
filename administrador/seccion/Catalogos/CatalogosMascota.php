@@ -268,8 +268,9 @@ $listaEstadoReporte = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 <?php
 include("../../template/cabecera.php"); 
 ?>
+ <h1>Catálogos - Mascota </h1>
 <!-- Color -->
-<div class="row mb-5">
+<div class="row mb-4">
     <div class="col-md-5">
         <div class="card">
             <div class="card-header">Datos de Color</div>

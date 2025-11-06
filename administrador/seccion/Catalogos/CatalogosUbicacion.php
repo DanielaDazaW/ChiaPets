@@ -54,7 +54,7 @@ $listaZona = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 
 include("../../template/cabecera.php"); 
 ?>
-
+ <h1>Catálogos - Ubicación</h1>
 <div class="row">
     <div class="col-md-5">
         <div class="card">

@@ -191,7 +191,7 @@ $listaTipoOrganizacion = $conexion->query("SELECT * FROM tipo_organizacion WHERE
  include("../../template/cabecera.php"); 
 ?>
 <div class="container">
-  <h1>Administrativos - Catálogos</h1>
+  <h1>Catálogos - Administrativos </h1>
 
 
   <!-- Formulario y listado Producto -->

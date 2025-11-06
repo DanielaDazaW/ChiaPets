@@ -153,7 +153,7 @@ $listaGenero = $sentenciaSQL->fetchAll(PDO::FETCH_ASSOC);
 
 include("../../template/cabecera.php"); 
 ?>
-
+ <h1>Catálogos - Persona/Usuario </h1>
 <!-- FORMULARIO Y TABLA TIPO USUARIO -->
 <div class="row mb-5">
     <div class="col-md-5">

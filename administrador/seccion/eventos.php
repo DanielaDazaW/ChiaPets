@@ -303,7 +303,7 @@ include("../template/cabecera.php");
     </form>
 
     <hr>
-
+      <h2>Listado de Participaciones</h2>
     <table class="table table-striped table-bordered">
         <thead>
             <tr>
