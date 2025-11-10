@@ -71,7 +71,7 @@ $totalVacunas = $rowVacunas['total'];
         <div class="col-12 col-md-2 mb-4 d-flex justify-content-center">
             <div class="card text-white" style="background: #FFCC18; width: 700px;">
                 <div class="card-body">
-                    <h5 class="card-title text-center">Usuarios Registrados</h5>
+                    <h5 class="card-title text-center">Personas Registradas</h5>
                     <p class="card-text display-4 text-center"><?php echo $totalUsuarios; ?></p>
                 </div>
                 <div class="card-footer d-flex align-items-center justify-content-center">

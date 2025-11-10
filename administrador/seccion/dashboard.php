@@ -172,7 +172,7 @@ canvas {
         </div>
     </div>
     <!-- Tablas resumen -->
-    <div class="row mt-4">
+    <div class="row mt-1">
         <div class="col-md-6">
             <h5>Mascotas con más reportes</h5>
             <table class="table table-sm">
@@ -189,6 +189,7 @@ canvas {
                 </tbody>
             </table>
         </div>
+
         <div class="col-md-6">
             <h5>Usuarios con más mascotas</h5>
             <table class="table table-sm">
@@ -221,17 +222,25 @@ canvas {
             }]
         }
     });
-    // Mascotas esterilizadas (Torta)
-    const esterilizadasTorta = new Chart(document.getElementById('esterilizadasTorta'), {
-        type: 'pie',
-        data: {
-            labels: <?= json_encode(array_column($esterilizadas, 'esterilizada')) ?>,
-            datasets: [{
-                data: <?= json_encode(array_column($esterilizadas, 'cantidad')) ?>,
-                backgroundColor: ['#32cd32','#e74c3c']
-            }]
+const esterilizadasTorta = new Chart(document.getElementById('esterilizadasTorta'), {
+    type: 'pie',
+    data: {
+        labels: <?= json_encode(array_column($esterilizadas, 'esterilizada')) ?>,
+        datasets: [{
+            data: <?= json_encode(array_column($esterilizadas, 'cantidad')) ?>,
+            backgroundColor: ['#32a1cdff','#a83ce7ff']
+        }]
+    },
+    options: {
+        plugins: {
+            title: {
+                display: true,
+                text: 'Mascota Esterilizada'
+            }
         }
-    });
+    }
+});
+
     // Mascotas por raza (barras)
     const mascotasRaza = new Chart(document.getElementById('mascotasRaza'), {
         type: 'bar',
