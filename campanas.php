@@ -10,7 +10,7 @@ $stmt->execute();
 .logo-container {
     display: flex;
     justify-content: center;
-    margin: 20px 0;
+    margin: 5px 0;
 }
 .logo-container img {
     max-width: 200px;
@@ -54,7 +54,7 @@ $stmt->execute();
 
 <!-- Logo centrado -->
 <div class="logo-container">
-   C alt="Logo de la organización">
+ <img src="img/chiapet3.png" alt="Chiapet Logo" class="img-fluid my-3" style="max-width: 180px; animation: zoomIn 1s;">
 </div>
 
 <div class="container">
