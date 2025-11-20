@@ -1,4 +1,6 @@
 <?php
+//Aquí se inicia la sesión PHP si aún no está activa. 
+//Las sesiones permiten guardar datos del usuario mientras navega, como su identidad.
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -193,7 +195,7 @@ body {
         <button type="submit" class="login-btn">Ingresar como Administrador</button>
     </form>
     <div class="login-links">
-        <a href="#">¿Olvidó su contraseña?</a>
+         <a href="../olvido_contrasena.php">¿Olvidó su contraseña?</a> <br>
     </div>
 </div>
 
