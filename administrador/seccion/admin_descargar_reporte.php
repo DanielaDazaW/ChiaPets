@@ -4,9 +4,8 @@ include("../config/bd.php");
 
 // SEGURIDAD: Solo usuario logueado (ajusta según tu sistema)
 session_start();
-if (!isset($_SESSION['usuario_id_persona'])) {
-    header("Location: ../login.php");
-    exit();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
 }
 
 $idReporte = $_GET['id'] ?? null;
@@ -37,7 +36,7 @@ if (!$reporte) {
 // PDF Layout mejorado
 $pdf = new FPDF();
 $pdf->AddPage();
-$pdf->Image(__DIR__ . '/../img/chiapet4.jpg', 70, 10, 60); // Logo ajusta ruta/nombre
+$pdf->Image('C:/xampp/htdocs/Chiapet/ChiaPets/img/chiapet4.jpg', 75, 10, 60); 
 $pdf->SetY(75);
 $pdf->SetFont('Arial', 'B', 18);
 $pdf->SetTextColor(6, 64, 43);
