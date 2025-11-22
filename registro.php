@@ -14,6 +14,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $fecha_nacimiento = $_POST['fecha_nacimiento'];
     $contrasena = $_POST['contrasena'];
     $contrasena2 = $_POST['contrasena2'];
+    if (!isset($_POST['acepta_terminos'])) {
+    $mensaje = "Debe aceptar los términos de tratamiento de datos para registrarse.";
+}
+
 
     // Cargar listas por si hay que volver a mostrar el formulario
     $tiposDocumento = $conexion->query("SELECT id_tipo_documento, tipo_documento FROM tipo_documento WHERE estado=1")->fetchAll(PDO::FETCH_ASSOC);
@@ -184,6 +188,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="contrasena2" class="form-label">Confirmar Contraseña</label>
                         <input type="password" id="contrasena2" name="contrasena2" required class="form-control" />
                     </div>
+                    <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="acepta_terminos" name="acepta_terminos" <?php echo isset($_POST['acepta_terminos']) ? 'checked' : ''; ?> required>
+                    <label class="form-check-label" for="acepta_terminos">
+                        Acepto los <a href="terminos_condiciones.php" target="_blank">Términos  y condiciones </a> y autorizo el tratamiento de mis datos personales</a> obligatoriamente para registrar mi usuario.
+                    </label>
+                </div>
+
                     <button type="submit" class="btn btn-primary w-100">Registrar</button>
                 </form>
                 <p class="text-center mt-3">
