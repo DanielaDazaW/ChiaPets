@@ -180,6 +180,12 @@ $listaReportes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <input type="hidden" name="txtIDReporte" value="<?= $r['id_reporte'] ?>">
                         <button type="submit" name="accionReporte" value="Borrar" class="btn btn-danger btn-sm" onclick="return confirm('¿Está seguro?')">Eliminar</button>
                     </form>
+                    <form action="descargar_reporte.php" method="get" style="display:inline;">
+                        <input type="hidden" name="id" value="<?= $r['id_reporte'] ?>">
+                        <button type="submit" class="btn btn-success btn-sm">Descargar PDF de reporte</button>
+                    </form>
+
+
                 </td>
             </tr>
             <?php endforeach; ?>

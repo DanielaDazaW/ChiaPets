@@ -549,6 +549,10 @@ include("../template/cabecera.php");
                             <input type="hidden" name="txtIDReporte" value="<?= $r['id_reporte'] ?>">
                             <button type="submit" name="accionReporte" value="Borrar" class="btn btn-danger btn-sm" onclick="return confirm('¿Desea eliminar este reporte?')">Eliminar</button>
                         </form>
+                                <form action="admin_descargar_reporte.php" method="get" style="display:inline;">
+            <input type="hidden" name="id" value="<?= $r['id_reporte'] ?>">
+            <button type="submit" class="btn btn-success btn-sm">Descargar reporte en PDF</button>
+        </form>
                     </td>
                 </tr>
                 <?php endforeach; ?>

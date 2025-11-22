@@ -191,7 +191,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="mb-3 form-check">
                     <input type="checkbox" class="form-check-input" id="acepta_terminos" name="acepta_terminos" <?php echo isset($_POST['acepta_terminos']) ? 'checked' : ''; ?> required>
                     <label class="form-check-label" for="acepta_terminos">
-                        Acepto los <a href="terminos_condiciones.php" target="_blank">Términos  y condiciones </a> y autorizo el tratamiento de mis datos personales</a> obligatoriamente para registrar mi usuario.
+                        Acepto los <a href="terminos_tratamiento_datos.php" target="_blank">Términos  y condiciones </a> y autorizo el tratamiento de mis datos personales</a> obligatoriamente para registrar mi usuario.
                     </label>
                 </div>
 
