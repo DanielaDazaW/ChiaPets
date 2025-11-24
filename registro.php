@@ -6,6 +6,10 @@ $mensaje = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nombres = trim($_POST['nombres']);
     $apellidos = trim($_POST['apellidos']);
+    // Después de hacer el trim de $nombres y $apellidos
+    $patternNombre = "/^[a-zA-ZñÑáéíóúÁÉÍÓÚ\s]+$/";
+
+
     $id_tipo_documento = intval($_POST['id_tipo_documento']);
     $numero_documento = trim($_POST['numero_documento']);
     $correo = trim($_POST['correo']);
@@ -26,10 +30,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Validaciones
     if (empty($nombres) || empty($apellidos) || empty($numero_documento) || empty($correo) || empty($telefono) || empty($contrasena) || empty($contrasena2)) {
         $mensaje = "Por favor, completa todos los campos obligatorios.";
+    } elseif (!preg_match($patternNombre, $nombres)) {
+        $mensaje = "El nombre solo puede contener letras y espacios.";
+    } elseif (!preg_match($patternNombre, $apellidos)) {
+        $mensaje = "El apellido solo puede contener letras y espacios.";
     } elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
         $mensaje = "Correo inválido.";
+    } elseif (!preg_match('/^\d+$/', $numero_documento)) {
+    $mensaje = "El número de documento debe contener solo números.";
     } elseif (!preg_match('/^\d+$/', $telefono)) {
-        $mensaje = "El teléfono debe contener solo números.";
+    $mensaje = "El teléfono debe contener solo números.";
     } elseif ($contrasena !== $contrasena2) {
         $mensaje = "Las contraseñas no coinciden.";
     } elseif (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/', $contrasena)) {
