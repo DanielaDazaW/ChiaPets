@@ -1,107 +1,103 @@
 <?php include("template/cabecera.php"); ?>
 <style>
-    body {
-        background: linear-gradient(110deg, #f2ffd7 70%, #c8ff61 100%);
-        font-family: 'Nunito', 'Segoe UI', Arial, sans-serif;
-        margin: 0;
-    }
+.promo-card {
+    max-width: 9000px;
+    background: rgba(255, 255, 255, 0.90);
+    border-radius: 16px; /* leve curva para amabilidad */
+    box-shadow: 0 18px 58px rgba(142,170,107,0.13), 0 6px 30px rgba(255, 255, 255, 0.09);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    min-height: 520px;
+    padding: 72px 58px 58px 58px;
+}
 
-    .container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        min-height: 85vh;
-        justify-content: flex-start;
-        padding-top: 2px;
-    }
+.logo-main {
+    margin-top: 0px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.logo-main img {
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    box-shadow: 0 10px 32px #aedf7e;
+    background: none;
+    border: none;
+}
 
-    .logo-area {
-        //background: #fff;
-        //border-radius: 50%;
-        box-shadow: 0 8px 32px rgba(96, 180, 75, 0.11);
-        padding: 18px;
-        margin-bottom: 22px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+.promo-title {
+    font-size: 2.8em;
+    color: #303629;
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: 0.04em;
+    text-align:center;
+}
 
-    .logo-area img {
-        width: 200px;
-        height: 200px;
-        //border-radius: 50%;
-        //object-fit: cover;
-        background: transparent;
-    }
+.promo-subtitle {
+    font-size: 1.35em;
+    color: #47af2c;
+    font-weight: 600;
+    margin-bottom: 35px;
+    margin-top: 8px;
+    text-align:center;
+}
 
-    .welcome {
-        color: #313330ff;
-        font-size: 2.2em;
-        font-weight: 500;
-        text-align: center;
-        margin-bottom: 39px;
-        letter-spacing: 0.04em;
-    }
+.promo-btn-group {
+    display: flex;
+    gap: 38px;
+    margin-bottom: 34px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
 
-    .cards-row {
-        display: flex;
-        gap: 46px;
-        justify-content: center;
-        margin-top: 5px;
-        flex-wrap: wrap;
-    }
+.promo-btn {
+    box-shadow: 0 4px 16px #c9ee72a4;
+    background: #cbf591;
+    color: #383a33;
+    border-radius: 30px;
+    padding: 22px 48px;
+    font-size: 1.35em;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, box-shadow 0.16s;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.promo-btn:hover {
+    background: #b6ec44;
+    color: #fff;
+    box-shadow: 0 6px 24px #b6ec44c7;
+    transform: translateY(-3px) scale(1.05);
+}
 
-    .card-btn {
-        background: #f9ffe7;
-        border-radius: 18px;
-        box-shadow: 0 2px 18px rgba(82,180,71,0.12);
-        padding: 27px 22px 19px 22px;
-        width: 155px;
-        height: 155px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        cursor: pointer;
-        text-decoration: none;
-        transition: background 0.17s, transform 0.22s, box-shadow 0.18s;
-        border: none;
-    }
-    .card-btn img {
-        width: 44px;
-        height: 44px;
-        margin-bottom: 26px;
-    }
-    .card-btn span {
-        color: #234710;
-        font-size: 1.19em;
-        font-weight: 600;
-        letter-spacing: 0.03em;
-    }
-    .card-btn:hover {
-        background: #eaffd0;
-        transform: translateY(-6px) scale(1.08);
-        box-shadow: 0 10px 32px rgba(41,180,71,0.14);
-    }
+/* Responsive */
+@media (max-width:850px){
+    .promo-card{ padding:30px 2vw }
+    .logo-main img{ width: 150px; height: 150px; }
+    .promo-title{ font-size:1.6em;}
+    .promo-btn{ font-size:1.12em; padding: 16px 28px;}
+}
+
 </style>
 
-<div class="container">
-    <div class="logo-area">
+<div class="promo-card">
+    <div class="logo-main">
         <img src="img/chiapet3.png" alt="Logo CHIAPET">
     </div>
-    <div class="welcome">Bienvenid@ a CHIAPET</div>
-    <div class="cards-row">
-        <a href="mascotas.php" class="card-btn">
-            <img src="img/MisMascotas.png" alt="Mis Mascotas">
-            <span>Mis Mascotas</span>
-        </a>
-        <a href="campanas.php" class="card-btn">
-            <img src="img/Campanas.png" alt="Campañas">
-            <span>Campañas</span>
-        </a>
-        <a href="reportes_mascota.php" class="card-btn">
-            <img src="img/reportes.png" alt="Reportes">
-            <span>Reportes</span>
-        </a>
+    <div class="promo-title">Bienvenid@ a CHIAPET</div>
+    <div class="promo-subtitle">¡Gestiona los datos de tus mascotas de forma fácil!</div>
+    <div class="promo-btn-group">
+        <button class="promo-btn" onclick="window.location.href='mascotas.php'">🐶 Ir a Mis Mascotas</button>
+        <button class="promo-btn" onclick="window.location.href='campanas.php'">📢 Ir a Campañas</button>
+        <button class="promo-btn" onclick="window.location.href='reportes_mascota.php'">📄 Ir a Reportes de mis mascotas</button>
     </div>
 </div>
 <?php include("template/pie.php"); ?>

@@ -33,7 +33,7 @@ $pdf->AddPage();
 
 // --- LOGO ---
 // --- LOGO ---
-$pdf->Image('C:/xampp/htdocs/Chiapet/ChiaPets/img/chiapet4.jpg', 70, 10, 60); // Logo más grande y centrado
+$pdf->Image('C:/xampp/htdocs/Chiapet/ChiaPets/img/chiapet4.jpg', 75, 10, 60); // Logo más grande y centrado
 $pdf->SetY(75); // Posiciona el cursor debajo del logo (ajusta según tamaño del logo)
 
 
