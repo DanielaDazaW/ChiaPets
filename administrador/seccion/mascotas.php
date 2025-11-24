@@ -43,10 +43,26 @@ $listaOrganizaciones = $conexion->query("SELECT id_organizacion, organizacion FR
 switch ($accion) {
     case "Agregar":
         $nombreArchivo = "imagen.jpg";
-        if ($archivo && $archivo['name']) {
-            $nombreArchivo = time() . "_" . $archivo['name'];
+            if ($archivo && $archivo['name']) {
+            $extensionesPermitidas = ['png', 'jpg', 'jpeg'];
+            $mimePermitidos = ['image/png', 'image/jpeg', 'image/jpg'];
+            $nombreArchivoOriginal = $archivo['name'];
+            $extension = strtolower(pathinfo($nombreArchivoOriginal, PATHINFO_EXTENSION));
+            $tipoMime = mime_content_type($archivo['tmp_name']);
+            if (
+            in_array($extension, $extensionesPermitidas) &&
+            in_array($tipoMime, $mimePermitidos) &&
+            preg_match('/^[a-zA-Z0-9_\-]+\.(' . implode('|', $extensionesPermitidas) . ')$/i', $nombreArchivoOriginal)
+            ) {
+            $nombreArchivo = time() . "_" . $nombreArchivoOriginal;
             move_uploaded_file($archivo['tmp_name'], "../img/" . $nombreArchivo);
+            } else {
+            $nombreArchivo = "imagen.jpg";
+                echo "<div class='alert alert-danger'>Archivo inválido (solo .png, .jpg, .jpeg y sin dobles extensiones)</div>";
+            }
         }
+
+
         $fechaRegistro = date('Y-m-d');
         $stmt = $conexion->prepare("
             INSERT INTO mascotas 
@@ -78,18 +94,33 @@ switch ($accion) {
         exit;
     case "Modificar":
         $nombreArchivo = $txtFotoUrl;
-        if ($archivo && $archivo['name']) {
+            if ($archivo && $archivo['name']) {
+            $extensionesPermitidas = ['png', 'jpg', 'jpeg'];
+            $mimePermitidos = ['image/png', 'image/jpeg', 'image/jpg'];
+            $nombreArchivoOriginal = $archivo['name'];
+            $extension = strtolower(pathinfo($nombreArchivoOriginal, PATHINFO_EXTENSION));
+            $tipoMime = mime_content_type($archivo['tmp_name']);
+            if (
+            in_array($extension, $extensionesPermitidas) &&
+            in_array($tipoMime, $mimePermitidos) &&
+            preg_match('/^[a-zA-Z0-9_\-]+\.(' . implode('|', $extensionesPermitidas) . ')$/i', $nombreArchivoOriginal)
+            ) {
             $stmtImg = $conexion->prepare("SELECT foto_url FROM mascotas WHERE id_mascota=:id");
             $stmtImg->bindParam(':id', $txtID);
             $stmtImg->execute();
             $registroImg = $stmtImg->fetch(PDO::FETCH_ASSOC);
-            $nuevoNombre = time() . "_" . $archivo['name'];
+            $nuevoNombre = time() . "_" . $nombreArchivoOriginal;
             move_uploaded_file($archivo['tmp_name'], "../img/" . $nuevoNombre);
             if ($registroImg['foto_url'] && $registroImg['foto_url'] !== 'imagen.jpg' && file_exists("../img/" . $registroImg['foto_url'])) {
-                unlink("../img/" . $registroImg['foto_url']);
+            unlink("../img/" . $registroImg['foto_url']);
             }
             $nombreArchivo = $nuevoNombre;
-        }
+                } else {
+                    echo "<div class='alert alert-danger'>Archivo inválido (solo .png, .jpg, .jpeg y sin dobles extensiones)</div>";
+                }
+            }
+
+        
         $stmt = $conexion->prepare("
             UPDATE mascotas SET nombre=:nombre, peso=:peso, id_persona=:id_persona, id_organizacion=:id_organizacion, id_especie=:id_especie, 
             id_raza=:id_raza, id_sexo=:id_sexo, id_color=:id_color, id_tamano=:id_tamano, fecha_nacimiento=:fecha_nacimiento, 
@@ -117,7 +148,7 @@ switch ($accion) {
         $stmt->bindParam(':id', $txtID);
         $stmt->execute();
         header("Location: mascotas.php");
-        exit;
+        break;
     case "Seleccionar":
         $stmt = $conexion->prepare("SELECT * FROM mascotas WHERE id_mascota=:id");
         $stmt->bindParam(':id', $txtID);

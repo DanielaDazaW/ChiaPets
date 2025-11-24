@@ -17,9 +17,22 @@ $txtContrasena2 = $_POST['contrasena2'] ?? '';
 $txtIdTipoUsuario = $_POST['id_tipo_usuario'] ?? '';
 $accion = $_POST['accion'] ?? '';
 
+if ($accion === 'Agregar' || $accion === 'Modificar') {
+    if (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u', $txtNombres)) {
+        $mensaje = "El nombre solo puede contener letras y espacios.";
+    } elseif (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u', $txtApellidos)) {
+        $mensaje = "El apellido solo puede contener letras y espacios.";
+    } elseif (!preg_match('/^[0-9]{6,20}$/', $txtNumeroDocumento)) {
+        $mensaje = "El número de documento debe tener solo dígitos (6 a 20).";
+    } elseif (!preg_match('/^[0-9]{7,15}$/', $txtTelefono)) {
+        $mensaje = "El teléfono debe tener solo dígitos (7 a 15).";
+    }
+}
+
 // Manejo acciones CRUD
 switch ($accion) {
     case 'Agregar':
+        if ($mensaje) break;
         // Validar contraseñas y campos mínimos aquí si quieres
         if ($txtContrasena !== $txtContrasena2) {
             $mensaje = "Las contraseñas no coinciden.";
@@ -82,6 +95,7 @@ switch ($accion) {
         }
         break;
     case 'Modificar':
+        if ($mensaje) break;
         // Editar persona y usuario
         $stmtModPersona = $conexion->prepare("UPDATE personas SET nombres = :nombres, apellidos = :apellidos, id_tipo_documento = :id_tipo_documento, numero_documento = :numero_documento, correo = :correo, telefono = :telefono, id_genero = :id_genero, fecha_nacimiento = :fecha_nacimiento WHERE id_persona = (SELECT id_persona FROM usuario WHERE id_usuario = :id_usuario)");
         $stmtModPersona->bindParam(':nombres', $txtNombres);
@@ -163,6 +177,8 @@ include("../template/cabecera.php");
     <?php if (isset($mensaje) && $mensaje) : ?>
         <div class="alert alert-warning"><?= htmlspecialchars($mensaje) ?></div>
     <?php endif; ?>
+<!-- Aquí tu formulario HTML -->
+
 
     <form method="post" autocomplete="off">
         <input type="hidden" name="txtIdUsuario" value="<?= htmlspecialchars($txtIdUsuario) ?>">
