@@ -46,13 +46,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $persona) {
     $contrasena = $_POST['contrasena'] ?? "";
     $contrasena2 = $_POST['contrasena2'] ?? "";
 
-    // Validaciones básicas
+        // Validaciones básicas y de formato
     if (empty($nombres) || empty($apellidos) || empty($numero_documento) || empty($correo) || empty($telefono)) {
         $mensaje = "Por favor, completa los campos obligatorios.";
+    } elseif (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u', $nombres)) {
+        $mensaje = "El nombre solo puede contener letras y espacios.";
+    } elseif (!preg_match('/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/u', $apellidos)) {
+        $mensaje = "El apellido solo puede contener letras y espacios.";
+    } elseif (!preg_match('/^[0-9]{6,20}$/', $numero_documento)) {
+        $mensaje = "El número de documento debe tener solo dígitos (6 a 20).";
+    } elseif (!preg_match('/^[0-9]{7,15}$/', $telefono)) {
+        $mensaje = "El teléfono debe tener solo dígitos (7 a 15).";
     } elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
         $mensaje = "Correo inválido.";
-    } elseif (!preg_match('/^\d+$/', $telefono)) {
-        $mensaje = "El teléfono debe contener solo números.";
     } elseif (!empty($fecha_nacimiento) && $fecha_nacimiento >= date('Y-m-d')) {
         $mensaje = "La fecha de nacimiento debe ser anterior a hoy.";
     } elseif ($contrasena !== "" || $contrasena2 !== "") {

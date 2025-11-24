@@ -31,9 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($nombres) || empty($apellidos) || empty($numero_documento) || empty($correo) || empty($telefono) || empty($contrasena) || empty($contrasena2)) {
         $mensaje = "Por favor, completa todos los campos obligatorios.";
     } elseif (!preg_match($patternNombre, $nombres)) {
-        $mensaje = "El nombre solo puede contener letras y espacios.";
+        $mensaje = "Los nombres solo puede contener letras y espacios.";
     } elseif (!preg_match($patternNombre, $apellidos)) {
-        $mensaje = "El apellido solo puede contener letras y espacios.";
+        $mensaje = "Los apellidos solo puede contener letras y espacios.";
     } elseif (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
         $mensaje = "Correo inválido.";
     } elseif (!preg_match('/^\d+$/', $numero_documento)) {
